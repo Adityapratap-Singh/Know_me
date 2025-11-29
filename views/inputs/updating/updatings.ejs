@@ -1,0 +1,43 @@
+<% layout('layouts/boilerPlate') %>
+
+<article class="contact active" data-page="update">
+    <header>
+        <h2 class="h2 article-title">Update Database</h2>
+    </header>
+
+    <section class="contact-form">
+        <form action="/updatings" method="POST" class="form">
+            <div class="input-wrapper">
+                <div class="quest">
+                    <label for="updates" class=""><h4>What do you want to update?</h4></label>
+                    <select id="updates" name="updates" class="form-input btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" area-expand="false" required>
+                        <option value="contact">Contact</option>
+                        <option value="whatDoIDo">What Do I Do</option>
+                        <option value="education">Education</option>
+                        <option value="experience">Experience</option>
+                        <option value="skill">Skills</option>
+                        <option value="project">Projects</option>
+                        <option value="testimonial">Testimonials</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-wrapper">
+                <button type="submit" name="action" value="add" class="form-btn">
+                    <ion-icon name="add-outline"></ion-icon>
+                    <span>Add</span>
+                </button>
+                <button type="submit" name="action" value="delete" class="form-btn">
+                    <ion-icon name="trash-outline"></ion-icon>
+                    <span>Delete</span>
+                </button>
+                <form action="/logout" method="POST" class="form">
+                    <button type="submit" class="form-btn">
+                        <ion-icon name="log-out-outline"></ion-icon>
+                        <span>Logout</span>
+                    </button>
+                </form>
+            </div>
+        </form>
+    </section>
+</article>
