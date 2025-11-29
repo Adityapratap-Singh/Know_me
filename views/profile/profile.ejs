@@ -1,4 +1,6 @@
 <% layout('layouts/boilerPlate') %>
+<%# This EJS file renders the main profile page, showcasing various aspects of the portfolio owner. %>
+
 <article class="about  active" data-page="about">
     <header>
       <h2 class="h2 article-title">About me</h2>
@@ -19,15 +21,15 @@
     </section>
 
 
-    <!--
-      - service
-    -->
+    <%# Section for "What I'm doing" (services offered) %>
     <section class="service">
       <h3 class="h3 service-title">What i'm doing</h3>
       <ul class="service-list">
+        <%# Loop through each 'whatDoIDo' item and display it. %>
         <% whatDoIDo.forEach(function(what) { %>
         <li class="service-item">
           <div class="service-icon-box">
+            <%# Display the icon for the service, if available. %>
             <img src="<%= (what.icon && what.icon.url) ? what.icon.url : '' %>" alt="<%= what.title %>" width="40">
           </div>
           <div class="service-content-box">
@@ -42,15 +44,15 @@
     </section>
 
 
-    <!--
-      - testimonials
-    -->
+    <%# Section for Testimonials %>
       <h3 class="h3 testimonials-title">Testimonials</h3>
       <ul class="testimonials-list has-scrollbar">
+        <%# Loop through each testimonial and display it. %>
         <% testimonials.forEach(function(testi) { %>
         <li class="testimonials-item">
           <div class="content-card" data-testimonials-item>
             <figure class="testimonials-avatar-box">
+              <%# Display the testimonial author's avatar, or a default image if none is provided. %>
               <img src="<%= (testi.image && testi.image.url) ? testi.image.url : './assets/images/avatar/avatar-1.png' %>" alt="<%= testi.name %>" width="60" data-testimonials-avatar>
             </figure>
             <h4 class="h4 testimonials-item-title" data-testimonials-title><%= testi.name %></h4>
@@ -64,6 +66,21 @@
         <% }); %>
       </ul>
 
-    </section>
+      <%# Section for Clients %>
+      <section class="clients"> 
+          <h3 class="h3 clients-title">Clients</h3>
+          <ul class="clients-list has-scrollbar">
+            <%# Loop through each client and display their logo and website link. %>
+            <% clients.forEach(function(client) { %>
+            <li class="clients-item">
+              <a href="<%= client.website %>" target="_blank" rel="noopener noreferrer">
+                <div class="client-logo-container">
+                  <img src="<%= client.logo.url %>" alt="<%= client.name %> logo">
+                </div>
+              </a>
+            </li>
+            <% }); %>
+          </ul>
+        </section>
     </div>
 </article>

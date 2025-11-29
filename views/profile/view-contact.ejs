@@ -1,0 +1,34 @@
+<% layout('layouts/boilerPlate') %>
+
+<article class="contact active" data-page="view-contact">
+
+  <header>
+    <h2 class="h2 article-title">Contact Details</h2>
+  </header>
+
+  <section class="contact-details-section">
+    <div class="contact-details-card">
+      <h4 class="h4 contact-item-title"><%= contact.name %></h4>
+      <p><strong>Email:</strong> <%= contact.email %></p>
+      <% if (contact.phone) { %>
+        <p><strong>Phone:</strong> <%= contact.phone %></p>
+      <% } %>
+      <p><strong>Message:</strong></p>
+      <p class="contact-message-text"><%= contact.message %></p>
+
+      <% if (contact.attachment && contact.attachment.url) { %>
+        <div class="attachment-section">
+          <a href="<%= contact.attachment.url %>" class="form-btn" target="_blank">View Attachment</a>
+        </div>
+      <% } %>
+
+      <div class="back-button-container">
+        <a href="/view-contacts" class="form-btn">Back to All Contacts</a>
+        <form action="/contacts/<%= contact._id %>?_method=DELETE" method="POST" style="display:inline;">
+          <button type="submit" class="form-btn">Delete Contact</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+</article>

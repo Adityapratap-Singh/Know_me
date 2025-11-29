@@ -1,0 +1,27 @@
+<% layout('layouts/boilerPlate') %>
+
+<article class="contact active" data-page="contact">
+
+  <header>
+    <h2 class="h2 article-title">Verify to View Contacts</h2>
+  </header>
+
+  <section class="contact-form">
+
+    <h3 class="h3 form-title">Enter Secret Key</h3>
+
+    <form action="/verify-contacts" method="POST" class="form" data-form>
+
+      <div class="input-wrapper">
+        <input type="password" name="secret" class="form-input" placeholder="Secret Key" required data-form-input>
+      </div>
+
+      <button class="form-btn" type="submit" data-form-btn>
+        <span>Verify</span>
+      </button>
+
+    </form>
+
+  </section>
+
+</article>

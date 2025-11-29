@@ -6,7 +6,7 @@
     </header>
 
     <section class="contact-form">
-        <form action="/updatings" method="POST" class="form">
+        <form action="/updating/updatings" method="POST" class="form">
             <div class="input-wrapper">
                 <div class="quest">
                     <label for="updates" class=""><h4>What do you want to update?</h4></label>
@@ -18,6 +18,7 @@
                         <option value="skill">Skills</option>
                         <option value="project">Projects</option>
                         <option value="testimonial">Testimonials</option>
+                        <option value="client">Clients</option>
                     </select>
                 </div>
             </div>
@@ -31,13 +32,13 @@
                     <ion-icon name="trash-outline"></ion-icon>
                     <span>Delete</span>
                 </button>
-                <form action="/logout" method="POST" class="form">
-                    <button type="submit" class="form-btn">
-                        <ion-icon name="log-out-outline"></ion-icon>
-                        <span>Logout</span>
-                    </button>
-                </form>
             </div>
+        </form>
+        <form action="/updating/logout" method="POST" class="form" style="margin-top: 1rem;">
+            <button type="submit" class="form-btn">
+                <ion-icon name="log-out-outline"></ion-icon>
+                <span>Logout</span>
+            </button>
         </form>
     </section>
 </article>

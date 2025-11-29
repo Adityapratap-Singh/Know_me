@@ -1,0 +1,121 @@
+/* view-contacts.css */
+
+.contact-list-section {
+  padding: 20px;
+}
+
+.contact-list-section .h2 {
+  margin-bottom: 30px;
+  text-align: center;
+  color: var(--white-2); /* Assuming --white-2 is a suitable heading color */
+}
+
+.testimonials-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  list-style: none;
+  padding: 0;
+}
+
+.testimonials-item {
+  background-color: var(--eerie-black-2); /* Darker background for the card */
+  border: 1px solid var(--jet); /* Subtle border */
+  border-radius: 10px;
+  box-shadow: var(--shadow-1); /* Assuming a shadow variable exists */
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.testimonials-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* More pronounced shadow on hover */
+}
+
+.content-card {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Ensure cards take full height in grid */
+  cursor: pointer; /* Indicate clickable */
+  background-color: var(--eerie-black-2); /* Ensure consistent background */
+}
+
+.content-card:hover {
+  background-color: var(--jet); /* Slightly darker on hover */
+}
+
+.h4.testimonials-item-title {
+  color: var(--white-2); /* Main text (name) in white */
+  font-size: var(--fs-5);
+  margin-bottom: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.testimonials-text {
+  color: var(--light-gray); /* Other text (message) in light grey */
+  font-size: var(--fs-6);
+  line-height: 1.6;
+  flex-grow: 1; /* Allow message to take available space */
+  margin-bottom: 15px;
+  overflow: hidden; /* Hide overflow if message is too long */
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Limit message to 3 lines */
+  -webkit-box-orient: vertical;
+}
+
+/* Styling for the hidden email/phone details in view-contacts.ejs */
+.content-card > div[style="display: none;"] > div {
+  color: var(--light-gray); /* Ensure hidden details are also light grey if revealed */
+  font-size: var(--fs-7);
+  margin-top: 5px;
+}
+
+
+.contact-buttons {
+  display: flex;
+  justify-content: flex-end; /* Align buttons to the right */
+  gap: 10px;
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid var(--jet); /* Separator for buttons, adjusted color */
+}
+
+.contact-buttons .form-btn {
+  font-size: var(--fs-7);
+  padding: 8px 15px;
+  border-radius: 5px;
+  text-transform: capitalize;
+  text-decoration: none;
+  color: var(--white-2);
+  background-color: var(--blue-ryb); /* Default button color */
+  transition: background-color 0.3s ease;
+}
+
+.contact-buttons .form-btn:hover {
+  background-color: var(--orange-yellow-crayola); /* Hover effect */
+}
+
+.contact-buttons .form-btn[type="submit"] {
+  background-color: var(--red); /* Red for delete button */
+}
+
+.contact-buttons .form-btn[type="submit"]:hover {
+  background-color: var(--dark-red); /* Darker red on hover */
+}
+
+.no-contacts-message {
+  text-align: center;
+  color: var(--light-gray);
+  font-size: var(--fs-5);
+  padding: 50px 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .testimonials-list {
+    grid-template-columns: 1fr; /* Stack cards on smaller screens */
+  }
+}

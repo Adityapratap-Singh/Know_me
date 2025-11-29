@@ -42,13 +42,18 @@ const contactSchema = new Schema(
       required: true,
       trim: true,
       minlength: [5, "Message must be at least 5 characters"]
+    },
+
+    attachment: {
+      url: String,
+      filename: String
     }
   },
   { timestamps: true }
 );
 
 // ⭐ Auto-add +91 if no country code is provided
-contactSchema.pre('save', function (next) {
+contactSchema.pre('save', async function () {
   if (this.phone) {
     let cleaned = this.phone.replace(/[\s\-()]/g, '');
 
@@ -67,8 +72,6 @@ contactSchema.pre('save', function (next) {
 
     this.phone = cleaned;
   }
-
-  next();
 });
 
 module.exports = mongoose.model('Contact', contactSchema);

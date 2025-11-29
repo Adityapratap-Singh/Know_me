@@ -1,0 +1,86 @@
+<% layout('layouts/boilerPlate') %>
+<%# This EJS file is responsible for rendering the forms to add, edit, or delete client information. %>
+
+<article class="contact active" data-page="update-client">
+    <header>
+        <h2 class="h2 article-title">Update Clients</h2>
+    </header>
+
+    <%# If the 'action' is to add a new client, display the add form. %>
+    <% if (action === 'add') { %>
+    <section class="contact-form">
+        <h3 class="h3 form-title">Add New Client</h3>
+        <%# The form for adding a new client. It supports file uploads for the logo. %>
+        <form action="/updating/client/add" method="POST" class="form" enctype="multipart/form-data">
+            <div class="input-wrapper">
+                <input type="text" name="name" class="form-input" placeholder="Client Name" required>
+                <input type="url" name="website" class="form-input" placeholder="Client Website (URL)">
+            </div>
+            <div class="input-wrapper">
+                <input type="file" name="logo" class="form-input">
+            </div>
+            <textarea name="description" class="form-input" placeholder="Description"></textarea>
+            <button type="submit" class="form-btn" style="margin-top: 1rem;">
+                <ion-icon name="add-outline"></ion-icon>
+                <span>Add Client</span>
+            </button>
+        </form>
+    </section>
+    <%# If the 'action' is to edit an existing client, display the edit form. %>
+    <% } else if (action === 'edit') { %>
+    <section class="contact-form">
+        <h3 class="h3 form-title">Edit Client</h3>
+        <%# The form for editing an existing client. It pre-fills with current data and supports file uploads. %>
+        <form action="/updating/client/edit/<%= data._id %>?_method=PUT" method="POST" class="form" enctype="multipart/form-data">
+            <div class="input-wrapper">
+                <input type="text" name="name" class="form-input" value="<%= data.name %>" required>
+                <input type="url" name="website" class="form-input" value="<%= data.website %>">
+            </div>
+            <div class="input-wrapper">
+                <input type="file" name="logo" class="form-input">
+            </div>
+            <textarea name="description" class="form-input"><%= data.description %></textarea>
+            <button type="submit" class="form-btn" style="margin-top: 1rem;">
+                <ion-icon name="checkmark-outline"></ion-icon>
+                <span>Update Client</span>
+            </button>
+        </form>
+    </section>
+    <%# If the 'action' is to delete a client, display the list of clients for selection. %>
+    <% } else if (action === 'delete') { %>
+    <section class="service">
+        <h3 class="h3 service-title">Delete Client</h3>
+        <%# Check if there's any client data to display. %>
+        <% if (data && data.length > 0) { %>
+        <ul class="service-list">
+            <%# Loop through each client and display their details with edit and delete options. %>
+            <% data.forEach(item => { %>
+            <li class="service-item">
+                <div class="service-content-box">
+                    <h4 class="h4 service-item-title"><%= item.name %></h4>
+                    <p class="service-item-text"><%= item.website %></p>
+                    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                        <%# Link to the edit form for this client. %>
+                        <a href="/updating/client/edit/<%= item._id %>" class="form-btn" style="flex: 1; text-align: center;">
+                            <ion-icon name="create-outline"></ion-icon>
+                            <span>Edit</span>
+                        </a>
+                        <%# Form to delete this client. %>
+                        <form action="/updating/client/delete/<%= item._id %>?_method=DELETE" method="POST" style="flex: 1;">
+                            <button type="submit" class="form-btn" style="width: 100%;">
+                                <ion-icon name="trash-outline"></ion-icon>
+                                <span>Delete</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </li>
+            <% }); %>
+        </ul>
+        <% } else { %>
+        <%# Message displayed if no clients are found. %>
+        <p>No clients found.</p>
+        <% } %>
+    </section>
+    <% } %>
+</article>

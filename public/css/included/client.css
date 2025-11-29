@@ -1,0 +1,79 @@
+/**
+ * Styling for the Clients Section
+ * This section displays logos of various clients.
+ */
+
+/* Basic styling for the entire clients section */
+.clients { margin-bottom: 15px; }
+
+/* Styling for the list of client logos */
+.clients-list {
+  display: flex; /* Arranges items in a row */
+  justify-content: flex-start; /* Aligns items to the start */
+  align-items: flex-start; /* Aligns items to the start vertically */
+  gap: 15px; /* Space between each client logo */
+  margin: 0 -15px; /* Adjusts margin to extend full width */
+  padding: 25px; /* Padding around the list */
+  padding-bottom: 25px; /* Extra padding at the bottom */
+  overflow-x: auto; /* Allows horizontal scrolling if content overflows */
+  scroll-behavior: smooth; /* Smooth scrolling effect */
+  overscroll-behavior-inline: contain; /* Prevents scrolling beyond the element */
+  scroll-snap-type: inline mandatory; /* Snaps to items when scrolling */
+  scroll-padding-inline: 25px; /* Padding for scroll snapping */
+}
+
+/* Styling for each individual client item in the list */
+.clients-item {
+  min-width: 50%; /* Each item takes at least half the width on small screens */
+  scroll-snap-align: start; /* Snaps to the start of each item */
+}
+
+/* Styling for the actual client logo image */
+.clients-item img {
+  filter: grayscale(1); /* Makes the logo black and white initially */
+  transition: var(--transition-1); /* Smooth transition for hover effects */
+  max-width: 100%; /* Ensures the image doesn't go beyond its container's width */
+  max-height: 100%; /* Ensures the image doesn't go beyond its container's height */
+  object-fit: contain; /* Scales the image down to fit within the container without cropping */
+}
+
+/* A special container for the client logo to ensure consistent sizing */
+.client-logo-container {
+  width: 120px; /* Fixed width for every logo container */
+  height: 80px; /* Fixed height for every logo container */
+  display: flex; /* Uses flexbox to center the logo */
+  justify-content: center; /* Centers the logo horizontally */
+  align-items: center; /* Centers the logo vertically */
+  background-color: var(--eerie-black-2); /* A subtle background color for the container */
+  border-radius: 10px; /* Slightly rounded corners for a softer look */
+  overflow: hidden; /* Hides any part of the logo that might spill out of the container */
+}
+
+/* When you hover over a client logo, it becomes full color */
+.clients-item img:hover { filter: grayscale(0); }
+
+/* --- Responsive Adjustments for Larger Screens --- */
+
+/* For screens wider than 450px */
+@media (min-width: 450px) {
+  /* Each client item takes up about a third of the width */
+  .clients-item { min-width: calc(33.33% - 10px); }
+}
+
+/* Further adjustments for even larger screens */
+ /* clients */
+
+  /* More space between client logos */
+  .clients-list {
+    gap: 50px;
+    margin: 0 -30px;
+    padding: 45px;
+    scroll-padding-inline: 45px;
+  }
+
+  /* Each client item takes up about a third of the width with more spacing */
+  .clients-item { min-width: calc(33.33% - 35px); }
+  /* clients */
+
+  /* On very large screens, each client item takes up about a quarter of the width */
+  .clients-item { min-width: calc(25% - 38px); }

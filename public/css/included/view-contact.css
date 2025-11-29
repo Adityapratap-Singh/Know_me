@@ -1,0 +1,119 @@
+/* view-contact.css */
+
+.contact-details-section {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Align to top if content is short */
+  min-height: calc(100vh - var(--navbar-height) - var(--footer-height, 0px)); /* Adjust as needed */
+}
+
+.contact-details-card {
+  background-color: var(--eerie-black-2); /* Darker background for the card */
+  border: 1px solid var(--jet); /* Subtle border */
+  border-radius: 10px;
+  box-shadow: var(--shadow-1); /* Assuming a shadow variable exists */
+  padding: 30px;
+  max-width: 600px; /* Limit card width */
+  width: 100%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-details-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* More pronounced shadow on hover */
+}
+
+.h4.contact-item-title {
+  color: var(--white-2); /* Main text (name) in white */
+  font-size: var(--fs-4);
+  margin-bottom: 15px;
+  text-align: center;
+  border-bottom: 1px solid var(--jet);
+  padding-bottom: 10px;
+}
+
+.contact-details-card p {
+  color: var(--light-gray); /* Other text (email, phone) in light grey */
+  font-size: var(--fs-6);
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.contact-details-card p strong {
+  color: var(--orange-yellow-crayola); /* Highlight labels */
+  margin-right: 5px;
+}
+
+.contact-message-text {
+  background-color: var(--jet); /* Slightly different background for message */
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 15px;
+  margin-bottom: 20px;
+  color: var(--light-gray);
+  white-space: pre-wrap; /* Preserve whitespace and line breaks */
+}
+
+.attachment-section {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.attachment-section .form-btn {
+  background-color: var(--blue-ryb);
+  color: var(--white-2);
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-size: var(--fs-7);
+  transition: background-color 0.3s ease;
+}
+
+.attachment-section .form-btn:hover {
+  background-color: var(--orange-yellow-crayola);
+}
+
+.back-button-container {
+  display: flex;
+  justify-content: space-between; /* Space out buttons */
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--jet);
+}
+
+.back-button-container .form-btn {
+  font-size: var(--fs-7);
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-transform: capitalize;
+  text-decoration: none;
+  color: var(--white-2);
+  background-color: var(--blue-ryb); /* Default button color */
+  transition: background-color 0.3s ease;
+}
+
+.back-button-container .form-btn:hover {
+  background-color: var(--orange-yellow-crayola); /* Hover effect */
+}
+
+.back-button-container form .form-btn {
+  background-color: var(--red); /* Red for delete button */
+}
+
+.back-button-container form .form-btn:hover {
+  background-color: var(--dark-red); /* Darker red on hover */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .contact-details-card {
+    padding: 20px;
+  }
+  .h4.contact-item-title {
+    font-size: var(--fs-5);
+  }
+  .contact-details-card p {
+    font-size: var(--fs-7);
+  }
+}

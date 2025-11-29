@@ -1,0 +1,43 @@
+<% layout('layouts/boilerPlate') %>
+
+<article class="contact active" data-page="view-contacts">
+
+  <header>
+    <h2 class="h2 article-title">View Contacts</h2>
+  </header>
+
+  <section class="contact-list-section testimonials">
+    <% if (contacts.length > 0) { %>
+    <ul class="testimonials-list has-scrollbar">
+      <% for (let i = 0; i < contacts.length; i++) { %>
+      <% const item = contacts[i]; %>
+      <li class="testimonials-item">
+        <div class="content-card" data-contact-item onclick="location.href='/contacts/<%= item._id %>'">
+          <h4 class="h4 testimonials-item-title"><%= item.name %></h4>
+          <div class="testimonials-text">
+            <p>
+              <%= item.message %>
+            </p>
+          </div>
+          <div class="contact-buttons">
+            <% if (item.attachment && item.attachment.url) { %>
+              <a href="<%= item.attachment.url %>" class="form-btn" data-contact-attachment onclick="event.stopPropagation()">View Document</a>
+            <% } %>
+            <form action="/contacts/<%= item._id %>?_method=DELETE" method="POST" onclick="event.stopPropagation()">
+              <button type="submit" class="form-btn">Delete</button>
+            </form>
+          </div>
+          <div style="display: none;">
+            <div data-contact-email><%= item.email %></div>
+            <div data-contact-phone><%= item.phone %></div>
+          </div>
+        </div>
+      </li>
+      <% } %>
+    </ul>
+    <% } else { %>
+    <h5 class="no-contacts-message">No contacts found.</h5>
+    <% } %>
+  </section>
+
+</article>
