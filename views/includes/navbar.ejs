@@ -1,0 +1,19 @@
+<nav class="navbar">
+    <ul class="navbar-list">
+        <li class="navbar-item">
+            <a href="/profile" class="navbar-link <%= (typeof currentPage !== 'undefined' && currentPage === 'profile') ? 'active' : '' %>">About</a>
+        </li>
+        <li class="navbar-item">
+            <a href="/resume" class="navbar-link <%= (typeof currentPage !== 'undefined' && currentPage === 'resume') ? 'active' : '' %>">Resume</a>
+        </li>
+        <li class="navbar-item">
+            <a href="/portfolio" class="navbar-link <%= (typeof currentPage !== 'undefined' && currentPage === 'portfolio') ? 'active' : '' %>">Portfolio</a>
+        </li>
+        <li class="navbar-item">
+            <a href="/blog" class="navbar-link <%= (typeof currentPage !== 'undefined' && currentPage === 'blog') ? 'active' : '' %>">Blog</a>
+        </li>
+        <li class="navbar-item">
+            <a href="/contact" class="navbar-link <%= (typeof currentPage !== 'undefined' && currentPage === 'contact') ? 'active' : '' %>">Contact</a>
+        </li>
+    </ul>
+</nav>

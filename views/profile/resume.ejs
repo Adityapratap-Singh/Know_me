@@ -1,0 +1,78 @@
+<% layout('layouts/boilerPlate') %>
+<article class="resume active" data-page="resume">
+    <header>
+        <h2 class="h2 article-title">
+            Resume
+        </h2>
+    </header>
+    <section class="timeline">
+        <div class="title-wrapper">
+            <div class="icon-box">
+                <ion-icon name="school-outline" class="icon"></ion-icon>
+            </div>
+            <h3 class="h3">Education</h3>
+            <ol class="timeline-list">
+                <% education.forEach(function(edu) { %>
+                <li class="timeline-item">
+                    <h4 class="h4 timeline-item-title">
+                        <%= edu.degree %> -
+                         <span class="text-secondary">
+                            <%= edu.institution %> - <%= edu.university %> afflicated
+                        </span>
+                    </h4>
+                    <span class="timeline-date"><%= new Date(edu.startDate).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) %> to <%= new Date(edu.endDate).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) %></span>
+                    <p class="timeline-text"><%= edu.description %></p>
+                </li>
+                <% }); %>
+            </ol>
+        </div>
+    </section>
+
+    <section class="timeline">
+        <div class="title-wrapper">
+            <div class="icon-box">
+                <ion-icon name="book-outline"></ion-icon>
+            </div>
+            <h3 class="h3">Experience</h3>
+        </div>
+        <ol class="timeline-list">
+            <% experience.forEach(function(exp) { %>
+            <li class="timeline-item">
+                <h4 class="h4 timeline-item-title">
+                    <%= exp.position %> -
+                     <span class="text-secondary">
+                        <%= exp.company %>
+                    </span>
+                </h4>
+                <span class="timeline-date"><%= exp.startDate %> to <%= exp.endDate %></span>
+                <ol>
+                    <% exp.responsibilities.forEach(function(resp) { %>
+                        <li><%= resp %></li>
+                    <% }); %>
+                </ol>
+            </li>
+            <% }); %>
+        </ol>
+    </section>
+
+    <section class="skill">
+        <h3 class="h3 skills-title">Skills</h3>
+        <ul class="skills-list content-card">
+            <% skills.forEach(function(skl) { %>
+            <li class="skills-item">
+                <div class="title-wrapper">
+                    <h5 class="h5"><%= skl.name %></h5>
+                </div>
+                <div class="skill-progress-bg">
+                    <div class="skill-progress-fill" style="width: 80%"></div>
+                </div>
+                <div class="tools">
+                    <% skl.tools.forEach(function(tool) { %>
+                        <span><%= tool %></span>
+                    <% }); %>
+                </div>
+            </li>
+            <% }); %>
+        </ul>
+    </section>
+</article>

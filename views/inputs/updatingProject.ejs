@@ -1,0 +1,79 @@
+<% layout('layouts/boilerPlate') %>
+
+<article class="contact active" data-page="update-project">
+    <header>
+        <h2 class="h2 article-title">Update Projects</h2>
+    </header>
+
+    <% if (action === 'add') { %>
+    <section class="contact-form">
+        <h3 class="h3 form-title">Add New Project</h3>
+        <form action="/updating/project/add" method="POST" class="form" enctype="multipart/form-data">
+            <div class="input-wrapper">
+                <input type="text" name="category" class="form-input" placeholder="Category" required>
+                <input type="text" name="title" class="form-input" placeholder="Title" required>
+            </div>
+            <div class="input-wrapper">
+                <input type="url" name="link" class="form-input" placeholder="Link">
+                <input type="file" name="image" class="form-input">
+            </div>
+            <textarea name="description" class="form-input" placeholder="Description" required></textarea>
+            <input type="text" name="technologies" class="form-input" placeholder="Technologies (comma-separated)" required>
+            <button type="submit" class="form-btn" style="margin-top: 1rem;">
+                <ion-icon name="add-outline"></ion-icon>
+                <span>Add Project</span>
+            </button>
+        </form>
+    </section>
+    <% } else if (action === 'edit') { %>
+    <section class="contact-form">
+        <h3 class="h3 form-title">Edit Project</h3>
+        <form action="/updating/project/edit/<%= data._id %>?_method=PUT" method="POST" class="form" enctype="multipart/form-data">
+            <div class="input-wrapper">
+                <input type="text" name="category" class="form-input" value="<%= data.category %>" required>
+                <input type="text" name="title" class="form-input" value="<%= data.title %>" required>
+            </div>
+            <div class="input-wrapper">
+                <input type="url" name="link" class="form-input" value="<%= data.link %>">
+                <input type="file" name="image" class="form-input">
+            </div>
+            <textarea name="description" class="form-input" required><%= data.description %></textarea>
+            <input type="text" name="technologies" class="form-input" value="<%= data.technologies.join(', ') %>" required>
+            <button type="submit" class="form-btn" style="margin-top: 1rem;">
+                <ion-icon name="checkmark-outline"></ion-icon>
+                <span>Update Project</span>
+            </button>
+        </form>
+    </section>
+    <% } else if (action === 'delete') { %>
+    <section class="service">
+        <h3 class="h3 service-title">Delete Project</h3>
+        <% if (data && data.length > 0) { %>
+        <ul class="service-list">
+            <% data.forEach(item => { %>
+            <li class="service-item">
+                <div class="service-content-box">
+                    <h4 class="h4 service-item-title"><%= item.title %></h4>
+                    <p class="service-item-text"><%= item.category %></p>
+                    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                        <a href="/updating/project/edit/<%= item._id %>" class="form-btn" style="flex: 1; text-align: center;">
+                            <ion-icon name="create-outline"></ion-icon>
+                            <span>Edit</span>
+                        </a>
+                        <form action="/updating/project/delete/<%= item._id %>?_method=DELETE" method="POST" style="flex: 1;">
+                            <button type="submit" class="form-btn" style="width: 100%;">
+                                <ion-icon name="trash-outline"></ion-icon>
+                                <span>Delete</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </li>
+            <% }); %>
+        </ul>
+        <% } else { %>
+        <p>No projects found.</p>
+        <% } %>
+    </section>
+    <% } %>
+</article>

@@ -1,0 +1,50 @@
+<% layout('layouts/boilerPlate') %>
+
+<article class="contact active" data-page="update-contact">
+    <header>
+        <h2 class="h2 article-title">Update Contacts</h2>
+    </header>
+
+    <% if (action === 'add') { %>
+    <section class="contact-form">
+        <h3 class="h3 form-title">Add New Contact</h3>
+        <form action="/updating/contact/add" method="POST" class="form">
+            <div class="input-wrapper">
+                <input type="text" id="name" name="name" class="form-input" placeholder="Name" required>
+                <input type="email" id="email" name="email" class="form-input" placeholder="Email" required>
+                <input type="text" id="phone" name="phone" class="form-input" placeholder="Phone" required>
+            </div>
+            <textarea id="message" name="message" class="form-input" placeholder="Message" required></textarea>
+            <button type="submit" class="form-btn">
+                <ion-icon name="add-outline"></ion-icon>
+                <span>Add Contact</span>
+            </button>
+        </form>
+    </section>
+    <% } else if (action === 'delete') { %>
+    <section class="service">
+        <h3 class="h3 service-title">Delete Contact</h3>
+        <% if (data && data.length > 0) { %>
+        <ul class="service-list">
+            <% data.forEach(item => { %>
+            <li class="service-item">
+                <div class="service-content-box">
+                    <h4 class="h4 service-item-title"><%= item.name %></h4>
+                    <p class="service-item-text"><%= item.email %></p>
+                    <p class="service-item-text"><%= item.message %></p>
+                    <form action="/updating/contact/delete/<%= item._id %>" method="POST" style="margin-top: 1rem;">
+                        <button type="submit" class="form-btn" style="width: 100%;">
+                            <ion-icon name="trash-outline"></ion-icon>
+                            <span>Delete</span>
+                        </button>
+                    </form>
+                </div>
+            </li>
+            <% }); %>
+        </ul>
+        <% } else { %>
+        <p>No items found.</p>
+        <% } %>
+    </section>
+    <% } %>
+</article>

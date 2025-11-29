@@ -1,0 +1,69 @@
+<% layout('layouts/boilerPlate') %>
+<article class="about  active" data-page="about">
+    <header>
+      <h2 class="h2 article-title">About me</h2>
+    </header>
+
+    <section class="about-text">
+      <p>
+        I'm a Creative Developer and UI/UX Designer based in Pune, India, specializing in Web Development and Machine Learning. 
+        I enjoy solving complex problems by turning them into smart, functional, and visually appealing digital experiences.
+      </p>
+
+      <p>
+        My focus is on building applications and websites that are not only user-friendly but also powered by intelligent 
+        solutions. By blending design with technology, I ensure that every project is efficient, innovative, and aligned 
+        with the brand’s identity. I’ve worked on projects ranging from intuitive web platforms to ML-driven applications 
+        that deliver real impact.
+      </p>
+    </section>
+
+
+    <!--
+      - service
+    -->
+    <section class="service">
+      <h3 class="h3 service-title">What i'm doing</h3>
+      <ul class="service-list">
+        <% whatDoIDo.forEach(function(what) { %>
+        <li class="service-item">
+          <div class="service-icon-box">
+            <img src="<%= (what.icon && what.icon.url) ? what.icon.url : '' %>" alt="<%= what.title %>" width="40">
+          </div>
+          <div class="service-content-box">
+            <h4 class="h4 service-item-title"><%= what.title %></h4>
+            <p class="service-item-text">
+              <%= what.description %>
+            </p>
+          </div>
+        </li>
+        <% }); %>
+      </ul>
+    </section>
+
+
+    <!--
+      - testimonials
+    -->
+      <h3 class="h3 testimonials-title">Testimonials</h3>
+      <ul class="testimonials-list has-scrollbar">
+        <% testimonials.forEach(function(testi) { %>
+        <li class="testimonials-item">
+          <div class="content-card" data-testimonials-item>
+            <figure class="testimonials-avatar-box">
+              <img src="<%= (testi.image && testi.image.url) ? testi.image.url : './assets/images/avatar/avatar-1.png' %>" alt="<%= testi.name %>" width="60" data-testimonials-avatar>
+            </figure>
+            <h4 class="h4 testimonials-item-title" data-testimonials-title><%= testi.name %></h4>
+            <div class="testimonials-text" data-testimonials-text>
+              <p>
+                <%= testi.testimonial %>
+              </p>
+            </div>
+          </div>
+        </li>
+        <% }); %>
+      </ul>
+
+    </section>
+    </div>
+</article>

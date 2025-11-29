@@ -1,0 +1,23 @@
+<% layout('layouts/boilerPlate') %>
+
+<article class="contact active" data-page="update">
+    <header>
+        <h2 class="h2 article-title">Update Database</h2>
+    </header>
+
+    <section class="contact-form">
+        <form action="/updating" method="POST" class="form">
+            <div class="input-wrapper">
+                <div class="quest">
+                    <label for="secret"><h4>Secret Code:</h4></label>
+                    <input type="password" id="secret" name="secret" class="form-input" required>
+                </div><br>
+            <div class="input-wrapper">
+                <button type="submit" name="action" value="" class="form-btn">
+                    <ion-icon name="search"></ion-icon> 
+                    <span>Check</span>
+                </button>
+            </div>
+        </form>
+    </section>
+</article>
