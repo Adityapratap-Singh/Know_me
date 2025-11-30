@@ -1,261 +1,176 @@
 # Portfolio Website
 
-This is a dynamic and interactive portfolio website built with Node.js, Express.js, and MongoDB. It features a clean user interface to showcase projects, skills, experience, and testimonials, along with a secure administrative panel for content management.
-
-## Table of Contents
-
-- [Features](#features)
-- [Technologies Used](#technologies-used)
-- [Architecture](#architecture)
-- [Setup and Installation](#setup-and-installation)
-- [Running the Application](#running-the-application)
-- [Usage](#usage)
-- [Folder Structure](#folder-structure)
-- [Future Enhancements](#future-enhancements)
+A dynamic and interactive portfolio website built with Node.js, Express.js, and MongoDB. This application allows you to showcase your projects, skills, education, experience, testimonials, and services ("What I Do"). It also includes a contact form with file upload capabilities and an administrative panel for managing content.
 
 ## Features
 
-### User-Facing
-- **Dynamic Profile Display**: Showcase your "What I Do" services, client logos, and testimonials.
-- **Interactive Portfolio**: Display your projects with categories and filtering options.
-- **Detailed Resume**: Present your education, experience, and skills.
-- **Blog Section**: A dedicated space for articles or updates.
-- **Contact Form**: Allow visitors to send messages, with optional file attachments.
-
-### Administrative Panel
-- **Secure Authentication**: Protect content management with a secret key.
-- **CRUD Operations**: Easily Create, Read, Update, and Delete entries for:
-    - "What I Do" items
-    - Testimonials
-    - Education details
-    - Experience entries
-    - Skills
-    - Projects
-    - Clients
-    - Contact messages
-- **Image & File Uploads**: Seamlessly upload images (for projects, testimonials, client logos, service icons) to Cloudinary and contact attachments to Supabase.
-- **Image Validation**: Ensure uploaded images meet minimum size requirements for quality control.
+*   **Dynamic Profile Pages:**
+    *   **About Me:** Displays personal introduction, "What I Do" services, client testimonials, and client logos.
+    *   **Resume:** Showcases education, work experience, and skills with progress indicators.
+    *   **Portfolio:** Presents projects with dynamic category filtering.
+    *   **Blog:** A dedicated page for blog content.
+*   **Contact Form:**
+    *   Allows visitors to send messages with optional file attachments.
+    *   Includes phone number validation and auto-formatting.
+    *   **Telegram Notifications:** Receive instant notifications on your Telegram app for new contact messages, including details and attachment links.
+*   **Admin Panel (Content Management System):**
+    *   Secure login for content administrators.
+    *   Add, edit, and delete various data types:
+        *   "What I Do" items (with icon uploads)
+        *   Testimonials (with image uploads)
+        *   Education entries
+        *   Experience entries
+        *   Skills
+        *   Projects (with image uploads and dynamic categories)
+        *   Clients (with logo uploads)
+        *   Contact messages (view and delete)
+    *   Image upload handling with Cloudinary for profile-related content and Supabase for contact form attachments.
+    *   Image dimension validation for uploaded assets.
+*   **Technologies:** Built with a modern Node.js stack, leveraging EJS for templating and MongoDB for data storage.
 
 ## Technologies Used
 
-- **Backend**:
-    - Node.js
-    - Express.js (Web Framework)
-    - Mongoose (MongoDB ODM)
-    - MongoDB Atlas (Cloud Database)
-- **Frontend**:
-    - EJS (Embedded JavaScript templates)
-    - HTML5, CSS3, JavaScript
-    - Bootstrap (from CDN)
-    - Ion-icons (for icons)
-- **Authentication & Security**:
-    - `express-session` (for session management)
-    - `dotenv` (for environment variables)
-- **File Storage**:
-    - Cloudinary (Cloud-based image and video management)
-    - Supabase (for contact form attachments)
-- **Utilities**:
-    - `multer` (for handling `multipart/form-data` for file uploads)
-    - `multer-storage-cloudinary` (Multer storage engine for Cloudinary)
-    - `jimp` (for image processing and validation)
-    - `method-override` (for using PUT and DELETE HTTP methods in forms)
-    - `ejs-mate` (for EJS layouts)
-
-## Architecture
-
-The application follows the **Model-View-Controller (MVC)** architectural pattern to ensure a clear separation of concerns, making the codebase organized, maintainable, and scalable.
-
--   **Models (`models/`)**: Define the data structures and interact directly with the MongoDB database. Examples: `client.js`, `project.js`, `contact.js`.
--   **Views (`views/`)**: EJS templates responsible for rendering the user interface. They display data prepared by the controllers. Examples: `profile.ejs`, `portfolio.ejs`, `updatingClient.ejs`.
--   **Controllers (`controllers/`)**: Contain the business logic. They handle incoming requests, interact with models to fetch or manipulate data, and then pass the processed data to the appropriate views for rendering. Examples: `profile.js`, `updating.js`, `contact.js`.
--   **Routes (`routes/`)**: Define the URL endpoints and map them to specific controller functions. They act as the entry points for different parts of the application.
+*   **Backend:**
+    *   Node.js
+    *   Express.js
+    *   MongoDB (via Mongoose ODM)
+    *   Cloudinary (Image storage for profile content)
+    *   Supabase (File storage for contact attachments)
+    *   `node-telegram-bot-api` (for contact notifications)
+    *   `dotenv` (Environment variable management)
+    *   `express-session` (Session management)
+    *   `multer` (Multipart form data handling for file uploads)
+    *   `jimp` (Image processing for dimension validation)
+    *   `method-override` (For PUT/DELETE requests in HTML forms)
+*   **Frontend:**
+    *   EJS (Embedded JavaScript templating)
+    *   HTML5, CSS3, JavaScript
+*   **Development Tools:**
+    *   Nodemon (for automatic server restarts during development)
 
 ## Setup and Installation
 
-To get this project up and running on your local machine, follow these steps:
-
 ### Prerequisites
 
--   [Node.js](https://nodejs.org/en/) (LTS version recommended)
--   [npm](https://www.npmjs.com/) (comes with Node.js) or [Yarn](https://yarnpkg.com/)
--   [MongoDB Atlas Account](https://www.mongodb.com/cloud/atlas/register) (for your cloud database)
--   [Cloudinary Account](https://cloudinary.com/users/register/with_email) (for image storage)
--   [Supabase Account](https://supabase.com/dashboard/sign-up) (for contact form attachment storage)
+*   Node.js (v18.0.0 or higher)
+*   MongoDB instance (local or cloud-hosted like MongoDB Atlas)
+*   Cloudinary account (for image uploads in admin panel)
+*   Supabase project (for file uploads in contact form)
+*   Telegram Bot and your Chat ID (for contact notifications)
 
-### Installation Steps
+### 1. Clone the repository
 
-1.  **Clone the repository:**
-    ```bash
-    git clone <repository_url>
-    cd portfolio
-    ```
-
-2.  **Install dependencies:**
-    ```bash
-    npm install --legacy-peer-deps
-    ```
-    (The `--legacy-peer-deps` flag is used to resolve potential peer dependency conflicts.)
-
-3.  **Create a `.env` file:**
-    In the root directory of the project, create a file named `.env` and populate it with your environment variables. This file is crucial for connecting to your services and securing your application.
-
-    ```
-    # MongoDB Atlas Connection
-    MONGODB_URI=mongodb+srv://<db_username>:<db_password>@your-cluster-name.mongodb.net/?appName=portfolio
-    db_username=YOUR_MONGODB_ATLAS_USERNAME
-    db_password=YOUR_MONGODB_ATLAS_PASSWORD
-
-    # Server Port
-    PORT=8080
-
-    # Google Maps Embed URL (Optional, replace with your own if needed)
-    maps=YOUR_GOOGLE_MAPS_EMBED_URL
-
-    # Cloudinary Configuration
-    CLOUDINARY_CLOUD_NAME=YOUR_CLOUDINARY_CLOUD_NAME
-    CLOUDINARY_API_KEY=YOUR_CLOUDINARY_API_KEY
-    CLOUDINARY_API_SECRET=YOUR_CLOUDINARY_API_SECRET
-
-    # Supabase Configuration (for contact form attachments)
-    SUPABASE_URL=YOUR_SUPABASE_URL
-    SUPABASE_KEY=YOUR_SUPABASE_ANON_KEY
-    SUPABASE_BUCKET=YOUR_SUPABASE_BUCKET_NAME
-
-    # Secret Keys for Application Security
-    secretkey=YOUR_SESSION_SECRET_KEY_FOR_ADMIN_PANEL
-    CONTACT_SECRET_KEY=YOUR_SECRET_KEY_FOR_VIEWING_CONTACTS
-    ```
-
-    **Important Notes for `.env`:**
-    -   **MongoDB Atlas**:
-        -   Replace `YOUR_MONGODB_ATLAS_USERNAME` and `YOUR_MONGODB_ATLAS_PASSWORD` with the credentials of a database user you create in MongoDB Atlas.
-        -   Ensure this user has appropriate permissions (e.g., read/write access to any database).
-        -   In MongoDB Atlas, configure 'Network Access' to allow connections from your application's IP address (or `0.0.0.0/0` for development, but restrict for production).
-        -   The `MONGODB_URI` should be copied directly from your Atlas cluster's "Connect your application" section, ensuring it includes your cluster name and any necessary parameters. The `app.js` will dynamically insert the `db_username` and `db_password` into this template.
-    -   **Cloudinary**: Obtain these credentials from your Cloudinary dashboard.
-    -   **Supabase**: Get your project URL and `anon` key from your Supabase project settings. Create a storage bucket (e.g., `contact-attachments`) and use its name.
-    -   **`secretkey` & `CONTACT_SECRET_KEY`**: These should be strong, random strings for session security and access control.
-
-### Update EJS Script Tag
-
-For the modular frontend JavaScript to work correctly, you **must** update the `<script>` tag for `public/js/script.js` in your main EJS layout file (e.g., `views/layouts/boilerPlate.ejs`) to include `type="module"`:
-
-```html
-<script src="/js/script.js" type="module"></script>
+```bash
+git clone https://github.com/Adityapratap-Singh/Know_me.git
+cd portfolio
 ```
 
-## Running the Application
+### 2. Install dependencies
 
-To start the application, you can use one of the following commands:
+```bash
+npm install
+```
 
--   **For production:**
-    ```bash
-    npm start
-    ```
-    This command runs the application using `node`.
+### 3. Environment Variables
 
--   **For development:**
-    ```bash
-    npm run dev
-    ```
-    This command uses `nodemon` to automatically restart the server whenever you make changes to the code.
+Create a `.env` file in the root directory of the project and add the following environment variables:
 
-The server will typically run on `http://localhost:8080` (or the port specified in your `.env` file).
+```
+MONGODB_URI=your_mongodb_connection_string
+PORT=8080 # Or any port you prefer
+
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_KEY=your_supabase_anon_key
+SUPABASE_BUCKET=your_supabase_bucket_name # e.g., contact-attachments
+
+db_username=your_mongodb_username # if included in MONGODB_URI, might not be needed separately
+db_password=your_mongodb_password # if included in MONGODB_URI, might not be needed separately
+
+secretkey=a_strong_secret_for_admin_panel # Used for admin panel login
+CONTACT_SECRET_KEY=a_strong_secret_for_contact_view # Used for viewing contacts
+
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token
+TELEGRAM_CHAT_ID=your_telegram_chat_id
+
+# Optional: Set to 'true' to skip MongoDB connection during development/testing
+# SKIP_DB=true
+```
+
+**Important:** Replace placeholder values with your actual credentials and keys. Keep your `.env` file secure and never commit it to version control.
+
+### 4. Start the application
+
+#### Development (with Nodemon)
+
+```bash
+npm run dev
+```
+
+#### Production
+
+```bash
+npm start
+```
+
+The application will be accessible at `http://localhost:8080` (or your specified PORT).
 
 ## Usage
 
-### Public Website
--   Open your web browser and navigate to `http://localhost:8080`.
--   Explore the profile, portfolio, resume, and blog sections.
--   Use the contact form to send messages.
+### Public Pages
 
-### Administrative Panel
--   Navigate to `http://localhost:8080/updating`.
--   Enter your `secretkey` (from `.env`) to access the update options.
--   From the update options page, you can choose to add, edit, or delete various content types.
--   To view contact messages, navigate to `http://localhost:8080/verify-contacts` and enter your `CONTACT_SECRET_KEY`.
+*   Navigate to `/profile`, `/resume`, `/portfolio`, `/blog` to view the respective sections.
+*   Use the `/contact` page to send messages and attachments.
 
-## Folder Structure
+### Admin Panel
 
-```
-.
-├── app.js                  # Main application entry point
-├── middleware.js           # Custom Express middleware
-├── package.json            # Project dependencies and scripts
-├── .env                    # Environment variables (sensitive info)
-├── cloudinary/             # Cloudinary configuration
-│   └── index.js
-├── controllers/            # MVC Controllers (business logic)
-│   ├── contact.js
-│   ├── profile.js
-│   └── updating.js
-├── models/                 # Mongoose Models (database schemas)
-│   ├── collection.js
-│   ├── contact.js
-│   ├── education.js
-│   ├── experience.js
-│   ├── project.js
-│   ├── skill.js
-│   ├── testimonials.js
-│   ├── whatDoIDo.js
-│   └── client.js
-├── public/                 # Static assets (CSS, JS, images)
-│   ├── css/
-│   │   └── included/       # Specific CSS files
-│   │       └── ...
-│   ├── js/
-│   │   ├── script.js       # Main frontend JavaScript (ES module entry)
-│   │   └── used/           # Separated JavaScript modules
-│   │       └── ...
-│   └── assets/             # Other static assets
-│       └── ...
-├── routes/                 # Express Routes (maps URLs to controllers)
-│   ├── contact.js
-│   ├── profile.js
-│   └── updating.js
-├── supabase/               # Supabase configuration
-│   └── index.js
-└── views/                  # EJS Templates (UI rendering)
-    ├── includes/
-    │   └── ...
-    ├── inputs/             # Forms for updating content
-    │   └── ...
-    ├── layouts/
-    │   └── boilerPlate.ejs # Main EJS layout
-    └── profile/            # Public-facing profile pages
-        └── ...
-```
+1.  Go to `/updating`.
+2.  Enter the `secretkey` defined in your `.env` file to access the admin options.
+3.  From the `/updating/updatings` page, you can choose to add, edit, or delete various data types.
+4.  To view contact messages, go to `/verify-contacts` and enter the `CONTACT_SECRET_KEY`.
 
-## Future Enhancements
+## API Endpoints
 
--   **User Authentication**: Implement a more robust user authentication system for the admin panel (e.g., username/password, OAuth).
--   **Error Handling**: Implement more sophisticated global error handling and display user-friendly error pages.
--   **Input Validation**: Enhance server-side input validation for all forms.
--   **Frontend Framework**: Consider integrating a frontend framework (e.g., React, Vue) for a more dynamic and component-based UI.
--   **SEO Optimization**: Add meta tags, sitemaps, and other SEO best practices.
--   **Testing**: Implement unit and integration tests for both backend and frontend.
--   **Deployment Automation**: Set up CI/CD pipelines for automated testing and deployment.
--   **Rich Text Editor**: Integrate a rich text editor for blog posts and descriptions in the admin panel.
--   **Pagination/Lazy Loading**: For large lists of projects, testimonials, or contacts.
--   **Accessibility**: Improve accessibility features for all users.
+### Public Routes
 
-## Code of Conduct
+*   `GET /`: Redirects to `/profile`
+*   `GET /profile`: Renders the main profile page.
+*   `GET /resume`: Renders the resume page.
+*   `GET /portfolio`: Renders the portfolio page with dynamic project categories.
+*   `GET /blog`: Renders the blog page.
+*   `GET /contact`: Renders the contact form.
+*   `POST /contact`: Submits a new contact message, handles file uploads, saves to DB, and sends Telegram notification.
+*   `GET /error`: Renders a generic error page.
 
-Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
+### Admin/Protected Routes (require `secretkey` or `CONTACT_SECRET_KEY` for access)
+
+*   **Admin Login:**
+    *   `GET /updating`: Render admin login.
+    *   `POST /updating`: Authenticate admin.
+    *   `GET /updating/updatings`: Admin options dashboard.
+    *   `POST /updating/updatings`: Handle add/delete actions.
+    *   `POST /updating/logout`: Logout from admin.
+*   **Contact Management:**
+    *   `GET /verify-contacts`: Render contact view verification.
+    *   `POST /verify-contacts`: Verify access to contacts.
+    *   `GET /view-contacts`: View all contacts.
+    *   `GET /contacts/:id`: View single contact.
+    *   `DELETE /contacts/:id`: Delete a contact.
+*   **CRUD Operations (Add/Edit/Delete) for various data models:**
+    *   `/updating/whatDoIDo`, `/updating/testimonial`, `/updating/education`, `/updating/experience`, `/updating/skill`, `/updating/project`, `/updating/client`
+    *   Each model typically has `GET /add`, `POST /add`, `GET /edit/:id`, `PUT /edit/:id`, `GET /delete`, `DELETE /delete/:id` routes.
+
+## Contributing
+
+Contributions are welcome! Please feel free to fork the repository, create a new branch, and submit a pull request.
 
 ## License
 
 This project is licensed under the ISC License. See the [LICENSE](LICENSE) file for details.
 
-## Contributing
+## Important Note on Personal Content
 
-Contributions are welcome! If you'd like to contribute to this project, please follow these steps:
-
-1.  **Fork the repository.**
-2.  **Create a new branch** for your feature or bug fix:
-    ```bash
-    git checkout -b feature-name
-    ```
-3.  **Make your changes** and commit them with a clear and descriptive message.
-4.  **Push your changes** to your forked repository.
-5.  **Create a pull request** to the main repository, explaining the changes you've made.
+Please be advised that the resume content, project descriptions, testimonials, and any other personal information displayed on this portfolio website are the intellectual property of Adityapratap Singh. This content is for viewing purposes only and is not to be copied, reproduced, or reused without explicit written permission. The open-source license for this project applies to the code base, not to the personal content displayed within the portfolio.
