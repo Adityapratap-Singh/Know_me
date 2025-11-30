@@ -6,5 +6,37 @@
 main {
   margin: 15px 12px;
   margin-bottom: 75px;
-  min-width: 259px;
+}
+
+/* Ensure images and other media fit within their containers */
+article img,
+article video,
+article iframe {
+  max-width: 100%;
+  height: auto;
+  display: block; /* Prevents extra space below images */
+}
+
+/* Handle long words and URLs */
+article p,
+article li,
+article a {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Handle pre-formatted text and code blocks */
+article pre,
+article code {
+  white-space: pre-wrap; /* Allows wrapping */
+  word-wrap: break-word;
+  overflow-x: auto; /* Adds horizontal scroll if content is still too wide */
+}
+
+/* Ensure tables are responsive */
+article table {
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+  border-collapse: collapse;
 }

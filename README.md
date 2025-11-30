@@ -9,6 +9,10 @@ A dynamic and interactive portfolio website built with Node.js, Express.js, and 
     *   **Resume:** Showcases education, work experience, and skills with progress indicators.
     *   **Portfolio:** Presents projects with dynamic category filtering.
     *   **Blog:** A dedicated page for blog content.
+*   **Mobile Responsiveness Improvements:**
+    *   Optimized navbar for mobile view: Icons-only navigation to save space, reduced height, and ensured fixed width to prevent overflow.
+    *   Social media icons integrated into the mobile navbar for easy access.
+    *   Enhanced blog section responsiveness: Ensured content (images, tables, text) adapts to screen size, preventing horizontal overflow and "zoom out" issues.
 *   **Contact Form:**
     *   Allows visitors to send messages with optional file attachments.
     *   Includes phone number validation and auto-formatting.

@@ -133,3 +133,9 @@
 
 
 .social-item .social-link:hover { color: var(--light-gray); }
+
+@media (max-width: 579px) {
+  .desktop-social-list {
+    display: none;
+  }
+}

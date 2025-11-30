@@ -13,6 +13,10 @@
   border-radius: 12px 12px 0 0;
   box-shadow: var(--shadow-2);
   z-index: 5;
+  display: flex; /* Make navbar a flex container */
+  justify-content: space-between; /* Space out navbar-list and social-list */
+  align-items: center; /* Vertically align items */
+  padding: 0 10px; /* Add some padding to the navbar itself */
 }
 
 .navbar-list {
@@ -20,7 +24,6 @@
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  padding: 0 10px;
 }
 
 .navbar-link {
@@ -51,3 +54,62 @@
 }
 
 .navbar-link ion-icon { font-size: 18px; }
+
+.mobile-social-list {
+  display: none; /* Hidden by default */
+}
+
+@media (max-width: 579px) {
+  .navbar {
+    flex-direction: column; /* Stack items vertically on small screens */
+    padding: 5px 0; /* Reduced padding */
+    flex-wrap: wrap; /* Allow children to wrap */
+    width: 100vw; /* Force width to 100% of viewport width */
+    left: 0; /* Ensure it starts from the left edge */
+    right: 0; /* Ensure it ends at the right edge */
+  }
+
+  .navbar-list {
+    flex-grow: 1; /* Allow it to grow */
+    flex-shrink: 1; /* Allow it to shrink */
+    justify-content: space-evenly; /* Distribute items evenly */
+    margin-bottom: 5px; /* Reduced margin */
+    min-width: 0; /* Allow flex items to shrink below their content size */
+  }
+
+  .navbar-item-text {
+    display: none; /* Hide text labels on small screens */
+  }
+
+  .navbar-link {
+    padding: 8px 5px; /* Reduced padding for icon-only display */
+    justify-content: center; /* Center the icon */
+    flex-grow: 1; /* Allow links to grow */
+    flex-shrink: 1; /* Allow links to shrink */
+    min-width: 0; /* Allow links to shrink below their content size */
+  }
+
+  .mobile-social-list {
+    display: flex; /* Show on small screens */
+    justify-content: space-evenly; /* Distribute social icons evenly */
+    gap: 0; /* Remove gap to prevent overflow */
+    width: 100%; /* Take full width */
+    min-width: 0; /* Allow flex items to shrink below their content size */
+  }
+
+  .mobile-social-list .social-link {
+    font-size: 20px; /* Slightly smaller icons for mobile */
+    color: var(--light-gray-70);
+    padding: 3px; /* Reduced padding to social links */
+  }
+
+  .mobile-social-list .social-link:hover {
+    color: var(--light-gray);
+  }
+}
+
+@media (min-width: 580px) {
+  .mobile-social-list {
+    display: none; /* Hide on larger screens */
+  }
+}

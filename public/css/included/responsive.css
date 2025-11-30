@@ -62,7 +62,8 @@
    */
 
   .sidebar, article {
-    width: 520px;
+    width: 100%; /* Take full width up to max-width */
+    max-width: 520px; /* Set max-width instead of fixed width */
     margin-inline: auto;
     padding: 30px;
   }
@@ -328,7 +329,10 @@ z
    * REUSED STYLE
    */
 
-  .sidebar, article { width: 700px; }
+  .sidebar, article {
+    width: 100%; /* Take full width up to max-width */
+    max-width: 700px; /* Set max-width instead of fixed width */
+  }
 
   .has-scrollbar::-webkit-scrollbar-button { width: 100px; }
 
