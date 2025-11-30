@@ -74,10 +74,10 @@ module.exports.renderPortfolio = async (req, res) => {
     try {
         // Fetch all project entries.
         const proj = await project.find();
-        // Get the enum values for the 'category' field from the Project model schema
-        const categories = project.schema.path('category').enumValues;
-        // Render the portfolio page with the fetched project data and categories.
-        res.render('profile/portfolio', { projects: proj, categories: categories, currentPage: 'portfolio' });
+        // Extract unique categories from the fetched projects
+        const uniqueCategories = [...new Set(proj.map(p => p.category))];
+        // Render the portfolio page with the fetched project data and unique categories.
+        res.render('profile/portfolio', { projects: proj, categories: uniqueCategories, currentPage: 'portfolio' });
     } catch (err) {
         // If something goes wrong, we send an error message.
         console.error(err);
