@@ -14,15 +14,11 @@
       <li class="filter-item">
         <button class="active" data-filter-btn>All</button>
       </li>
+      <% categories.forEach(function(category) { %>
       <li class="filter-item">
-        <button data-filter-btn>Web design</button>
+        <button data-filter-btn><%= category %></button>
       </li>
-      <li class="filter-item">
-        <button data-filter-btn>Applications</button>
-      </li>
-      <li class="filter-item">
-        <button data-filter-btn>Web development</button>
-      </li>
+      <% }); %>
     </ul>
 
     <%# Custom select dropdown for filtering on smaller screens %>
@@ -37,15 +33,11 @@
         <li class="select-item">
           <button data-select-item>All</button>
         </li>
+        <% categories.forEach(function(category) { %>
         <li class="select-item">
-          <button data-select-item>Web design</button>
+          <button data-select-item><%= category %></button>
         </li>
-        <li class="select-item">
-          <button data-select-item>Applications</button>
-        </li>
-        <li class="select-item">
-          <button data-select-item>Web development</button>
-        </li>
+        <% }); %>
       </ul>
     </div>
     

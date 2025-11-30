@@ -47,10 +47,12 @@
   background-color: var(--eerie-black-2); /* A subtle background color for the container */
   border-radius: 10px; /* Slightly rounded corners for a softer look */
   overflow: hidden; /* Hides any part of the logo that might spill out of the container */
+  transition: transform var(--transition-1), box-shadow var(--transition-1), border-color var(--transition-1);
 }
 
 /* When you hover over a client logo, it becomes full color */
 .clients-item img:hover { filter: grayscale(0); }
+.client-logo-container:hover { transform: translateY(-2px); box-shadow: 0 16px 40px hsla(45, 100%, 50%, 0.12); }
 
 /* --- Responsive Adjustments for Larger Screens --- */
 

@@ -36,6 +36,7 @@
   border-radius: 14px;
   box-shadow: var(--shadow-2);
   z-index: 1;
+  transition: transform var(--transition-1), box-shadow var(--transition-1);
 }
 
 .service-item::before {
@@ -47,6 +48,8 @@
   z-index: -1;
 }
 
+.service-item:hover { transform: translateY(-3px); box-shadow: var(--shadow-3); }
+
 .service-icon-box { margin-bottom: 10px; }
 
 .service-icon-box img { margin: auto; }
@@ -54,6 +57,8 @@
 .service-content-box { text-align: center; }
 
 .service-item-title { margin-bottom: 7px; }
+
+.service-item-title { letter-spacing: 0.2px; }
 
 .service-item-text {
   color: var(--light-gray);

@@ -17,4 +17,9 @@ router.get('/portfolio', profileController.renderPortfolio);
 // BLOG
 router.get('/blog', profileController.renderBlog);
 
+// ERROR
+router.get('/error', (req, res) => {
+    res.render('error', { message: 'Something went wrong.' });
+});
+
 module.exports = router;

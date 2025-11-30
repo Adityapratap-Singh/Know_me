@@ -49,7 +49,7 @@
                 <span class="timeline-date"><%= exp.startDate %> to <%= exp.endDate %></span>
                 <ol>
                     <% exp.responsibilities.forEach(function(resp) { %>
-                        <li><p> <%= resp %> </p></li>
+                        <li><p class="timeline-text"> <%= resp %> </p></li>
                     <% }); %>
                 </ol>
             </li>
@@ -65,13 +65,15 @@
                 <div class="title-wrapper">
                     <h5 class="h5"><%= skl.name %></h5>
                 </div>
-                <div class="skill-progress-bg">
-                    <div class="skill-progress-fill" style="width: 80%"></div>
-                </div>
                 <div class="tools">
                     <% skl.tools.forEach(function(tool) { %>
-                        <span><%= tool %></span>
+                        <% tool.split(', ').forEach(function(t) { %>
+                            <span><%= t %></span>
+                        <% }); %>
                     <% }); %>
+                </div>
+                <div class="skill-progress-bg">
+                    <div class="skill-progress-fill" style="width: 100%"></div>
                 </div>
             </li>
             <% }); %>

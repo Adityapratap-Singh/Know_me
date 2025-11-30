@@ -505,7 +505,7 @@ z
 
   /* testimonials */
 
-  .testimonials-item { min-width: calc(50% - 15px); }
+  .testimonials-item { min-width: 280px; }
 
   /* clients */
 

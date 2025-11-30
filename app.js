@@ -43,17 +43,28 @@ try {
     const contact = require('./models/contact');
     const collection = require('./models/collection');
 
-    // MongoDB
-    const dbUsername = process.env.db_username;
-    const dbPassword = process.env.db_password;
-    const dbUriTemplate = process.env.MONGODB_URI;
-
-    // Replace placeholders with actual credentials
-    const dbUrl = dbUriTemplate.replace('<db_username>', dbUsername).replace('<db_password>', dbPassword);
-
-    mongoose.connect(dbUrl)
-        .then(() => console.log("MongoDB connected"))
-        .catch(err => console.log(err));
+    const skipDb = process.env.SKIP_DB === 'true';
+    if (!skipDb) {
+        const dbUsername = process.env.db_username;
+        const dbPassword = process.env.db_password;
+        const dbUriTemplate = process.env.MONGODB_URI;
+        const dbUrl = dbUriTemplate ? dbUriTemplate.replace('<db_username>', dbUsername).replace('<db_password>', dbPassword) : '';
+        mongoose.set('bufferCommands', false);
+        mongoose.connect(dbUrl, {
+            serverSelectionTimeoutMS: 8000,
+            connectTimeoutMS: 10000,
+            socketTimeoutMS: 20000,
+            family: 4
+        })
+            .then(() => {
+                console.log("MongoDB connected");
+            })
+            .catch(err => {
+                console.log("MongoDB connection error:", err);
+            });
+    } else {
+        console.log("Skipping MongoDB connection (SKIP_DB=true)");
+    }
 
     // Middleware to check if user is authenticated
     const isAuthenticated = (req, res, next) => {
@@ -80,9 +91,9 @@ try {
     const updatingRoutes = require('./routes/updating');
     app.use('/updating', updatingRoutes);
 
-    // SERVER
-    const port = process.env.PORT;
+    const port = process.env.PORT || 8080;
     app.listen(port, () => console.log(`Server is running on port ${port}`));
+
 } catch (e) {
     console.error("Unhandled exception:", e);
 }

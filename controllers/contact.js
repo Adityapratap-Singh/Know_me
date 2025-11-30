@@ -10,6 +10,8 @@ const supabase = require('../supabase');
 const multer = require('multer');
 // We configure Multer to store files in memory temporarily before sending them to Supabase.
 const upload = multer({ storage: multer.memoryStorage() });
+const TelegramBot = require('node-telegram-bot-api');
+const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN);
 
 // This is a special helper that wraps Multer's upload process.
 // It catches any errors during file upload and sends a friendly message back to the user.
@@ -29,7 +31,12 @@ const uploadWithErrorHandler = (req, res, next) => {
 
 // Renders the contact form page where visitors can send messages.
 module.exports.renderContactForm = (req, res) => {
-    res.render('profile/contact', { currentPage: 'contact' });
+    try {
+        res.render('profile/contact', { currentPage: 'contact' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).render('error', { message: 'Failed to load contact form.' });
+    }
 };
 
 // Processes the submitted contact form, saves the message, and uploads any attachments to Supabase.
@@ -48,13 +55,16 @@ module.exports.submitContactForm = async (req, res) => {
         });
         // If there's an attached file, we'll upload it to Supabase.
         if (req.file) {
+            // Generate a unique filename to prevent conflicts
+            const uniqueFilename = `attachments/${Date.now()}-${req.file.originalname}`;
+
             // Upload the file to our Supabase storage bucket.
             const { data, error } = await supabase.storage
                 .from(process.env.SUPABASE_BUCKET)
-                .upload(`attachments/${req.file.originalname}`, req.file.buffer, {
+                .upload(uniqueFilename, req.file.buffer, {
                     contentType: req.file.mimetype,
                     cacheControl: '3600',
-                    upsert: false, // Don't overwrite if a file with the same name exists.
+                    upsert: false, // With unique filenames, upsert: false is fine.
                 });
 
             if (error) {
@@ -62,7 +72,7 @@ module.exports.submitContactForm = async (req, res) => {
             }
 
             // Get the public web address (URL) for the uploaded file.
-            const { data: urlData, error: urlError } = supabase.storage.from(process.env.SUPABASE_BUCKET).getPublicUrl(`attachments/${req.file.originalname}`);
+            const { data: urlData, error: urlError } = supabase.storage.from(process.env.SUPABASE_BUCKET).getPublicUrl(uniqueFilename);
             if (urlError) {
                 throw urlError; // If getting the URL fails, we stop here.
             }
@@ -72,28 +82,51 @@ module.exports.submitContactForm = async (req, res) => {
         console.log('Preparing to save this new contact message:', JSON.stringify(newContact, null, 2));
         await newContact.save(); // Save the complete contact message to our database.
         console.log('Contact message saved successfully!');
+
+        // Send Telegram notification
+        try {
+            let message = `New Contact Message!\n\nName: ${newContact.name}\nEmail: ${newContact.email}\nPhone: ${newContact.phone || 'N/A'}\nMessage: ${newContact.message}`;
+            if (newContact.attachment && newContact.attachment.url) {
+                message += `\nAttachment: ${newContact.attachment.url}`;
+            }
+            await bot.sendMessage(process.env.TELEGRAM_CHAT_ID, message);
+            console.log('Telegram notification sent successfully.');
+        } catch (telegramError) {
+            console.error('Failed to send Telegram notification:', telegramError);
+        }
+
         res.redirect('/profile'); // Send the user back to the profile page.
     } catch (err) {
         console.error('Oops! There was an error saving the contact message:', err);
-        res.status(500).send('We couldn\'t save your message right now. Please try again!');
+        res.status(500).render('error', { message: 'We couldn\'t save your message right now. Please try again!' });
     }
 };
 
 // Renders the page where users can enter a secret code to view contact messages.
 module.exports.renderVerifyContacts = (req, res) => {
-    res.render('profile/verify-contacts');
+    try {
+        res.render('profile/verify-contacts');
+    } catch (err) {
+        console.error(err);
+        res.status(500).render('error', { message: 'Failed to load verification page.' });
+    }
 };
 
 // Checks the submitted secret code to grant access to view contact messages.
 module.exports.verifyContacts = (req, res) => {
-    const { secret } = req.body;
-    // If the secret code is correct, we mark the session as verified for contacts.
-    if (secret === process.env.CONTACT_SECRET_KEY) {
-        req.session.isContactsVerified = true;
-        return res.redirect('/view-contacts'); // Send them to the page to view all contacts.
+    try {
+        const { secret } = req.body;
+        // If the secret code is correct, we mark the session as verified for contacts.
+        if (secret === process.env.CONTACT_SECRET_KEY) {
+            req.session.isContactsVerified = true;
+            return res.redirect('/view-contacts'); // Send them to the page to view all contacts.
+        }
+        console.log('Someone tried to view contacts with an invalid secret code.');
+        res.status(400).send('That secret code isn\'t quite right for contacts. Please try again!');
+    } catch (err) {
+        console.error(err);
+        res.status(500).render('error', { message: 'Failed to verify contacts.' });
     }
-    console.log('Someone tried to view contacts with an invalid secret code.');
-    res.status(400).send('That secret code isn\'t quite right for contacts. Please try again!');
 };
 
 // Renders the page that displays all submitted contact messages.
@@ -105,7 +138,7 @@ module.exports.viewContacts = async (req, res) => {
         res.render('profile/view-contacts', { contacts, currentPage: 'view-contacts' });
     } catch (err) {
         console.error('Oops! There was an error fetching contact messages:', err);
-        res.status(500).send('We couldn\'t load the contact messages right now. Please try again!');
+        res.status(500).render('error', { message: 'We couldn\'t load the contact messages right now. Please try again!' });
     }
 };
 
@@ -121,7 +154,7 @@ module.exports.viewSingleContact = async (req, res) => {
         res.render('profile/view-contact', { contact: foundContact, currentPage: 'view-contact' });
     } catch (err) {
         console.error('Oops! There was an error fetching a single contact message:', err);
-        res.status(500).send('We couldn\'t load that contact message right now. Please try again!');
+        res.status(500).render('error', { message: 'We couldn\'t load that contact message right now. Please try again!' });
     }
 };
 
@@ -151,7 +184,7 @@ module.exports.deleteContact = async (req, res) => {
         res.redirect('/view-contacts'); // Redirect back to the page showing all contacts.
     } catch (err) {
         console.error('Oops! There was an error deleting the contact message:', err);
-        res.status(500).send('We couldn\'t delete that contact message right now. Please try again!');
+        res.status(500).render('error', { message: 'We couldn\'t delete that contact message right now. Please try again!' });
     }
 };
 

@@ -51,10 +51,10 @@
           <%# Loop through each testimonial and display it. %>
           <% testimonials.forEach(function(testi) { %>
           <li class="testimonials-item">
-            <div class="content-card" data-testimonials-item>
+            <div class="content-card testimonial-card" data-testimonials-item>
               <figure class="testimonials-avatar-box">
                 <%# Display the testimonial author's avatar, or a default image if none is provided. %>
-                <img src="<%= (testi.image && testi.image.url) ? testi.image.url : './assets/images/avatar/avatar-1.png' %>" alt="<%= testi.name %>" width="60" data-testimonials-avatar>
+                <img src="<%= (testi.image && testi.image.url) ? testi.image.url : '/assets/images/avatar/avatar-1.png' %>" alt="<%= testi.name %>" width="60" data-testimonials-avatar>
               </figure>
               <h4 class="h4 testimonials-item-title" data-testimonials-title><%= testi.name %></h4>
               <div class="testimonials-text" data-testimonials-text>
@@ -66,6 +66,8 @@
           </li>
           <% }); %>
         </ul>
+        <div class="testimonial-nav prev" aria-label="Previous"><ion-icon name="chevron-back"></ion-icon></div>
+        <div class="testimonial-nav next" aria-label="Next"><ion-icon name="chevron-forward"></ion-icon></div>
       </section>
 
       <%# Section for Clients %>

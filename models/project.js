@@ -6,7 +6,7 @@ const projectsSchema = new Schema({
         type: String,
         required: true,
         trim: true,
-        enum: ['Web design', 'Applications', 'Web development']
+        enum: ['Web design', 'Applications', 'Web development', 'Web Development']
     },
     title: {
         type: String,

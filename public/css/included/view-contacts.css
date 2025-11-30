@@ -10,7 +10,7 @@
   color: var(--white-2); /* Assuming --white-2 is a suitable heading color */
 }
 
-.testimonials-list {
+[data-page="view-contacts"] .testimonials-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 25px;
@@ -115,7 +115,7 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .testimonials-list {
-    grid-template-columns: 1fr; /* Stack cards on smaller screens */
+  [data-page="view-contacts"] .testimonials-list {
+    grid-template-columns: 1fr;
   }
 }

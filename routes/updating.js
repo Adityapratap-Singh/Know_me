@@ -55,12 +55,12 @@ router.post('/skill/add', isVerified, updatingController.addSkill);
 // Show the form to add a new project
 router.get('/project/add', isVerified, updatingController.renderAddProject);
 // Process the submission to add a new project, including image upload
-router.post('/project/add', isVerified, upload.single('image'), updatingController.addProject);
+router.post('/project/add', isVerified, upload.single('image'), validateImageDimensions, updatingController.addProject);
 
 // Show the form to add a new testimonial
 router.get('/testimonial/add', isVerified, updatingController.renderAddTestimonial);
 // Process the submission to add a new testimonial, including image upload
-router.post('/testimonial/add', isVerified, upload.single('image'), updatingController.addTestimonial);
+router.post('/testimonial/add', isVerified, upload.single('image'), validateImageDimensions, updatingController.addTestimonial);
 
 // Show the form to add a new client
 router.get('/client/add', isVerified, updatingController.renderAddClient);
@@ -72,7 +72,7 @@ router.post('/client/add', isVerified, upload.single('logo'), validateImageDimen
 // Show the form to edit an existing project
 router.get('/project/edit/:id', isVerified, updatingController.renderEditProject);
 // Process the submission to update an existing project, including image upload
-router.put('/project/edit/:id', isVerified, upload.single('image'), updatingController.editProject);
+router.put('/project/edit/:id', isVerified, upload.single('image'), validateImageDimensions, updatingController.editProject);
 
 // Show the form to edit existing education details
 router.get('/education/edit/:id', isVerified, updatingController.renderEditEducation);
@@ -126,5 +126,7 @@ router.get('/client/delete', isVerified, updatingController.renderDeleteClient);
 // Process the request to delete a specific client
 router.delete('/client/delete/:id', isVerified, updatingController.deleteClient);
 
-// Make these routes available to our main application
+if (process.env.SKIP_DB === 'true') {
+  router.post('/debug/cloudinary', upload.single('image'), updatingController.debugCloudinaryUpload);
+}
 module.exports = router;

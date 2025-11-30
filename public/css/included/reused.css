@@ -10,6 +10,7 @@ article {
   padding: 15px;
   box-shadow: var(--shadow-1);
   z-index: 1;
+  transition: transform var(--transition-1), box-shadow var(--transition-1), border-color var(--transition-1);
 }
 
 .separator {
@@ -52,6 +53,12 @@ article.active {
   animation: fade 0.5s ease backwards;
 }
 
+article.active:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-3);
+  border-color: rgba(255,255,255,0.08);
+}
+
 @keyframes fade {
   0% { opacity: 0; }
   100% { opacity: 1; }
@@ -86,8 +93,8 @@ article.active {
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 30px;
-  height: 3px;
+  width: 52px;
+  height: 4px;
   background: var(--text-gradient-yellow);
   border-radius: 3px;
 }
@@ -108,6 +115,10 @@ article.active {
 }
 
 .has-scrollbar::-webkit-scrollbar-button { width: 20px; }
+.has-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--orange-yellow-crayola) var(--onyx);
+}
 
 .content-card {
   position: relative;
@@ -118,6 +129,7 @@ article.active {
   box-shadow: var(--shadow-2);
   cursor: pointer;
   z-index: 1;
+  transition: transform var(--transition-1), box-shadow var(--transition-1), filter var(--transition-1);
 }
 
 .content-card::before {
@@ -128,3 +140,5 @@ article.active {
   border-radius: inherit;
   z-index: -1;
 }
+
+.content-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-4); filter: brightness(1.02); }

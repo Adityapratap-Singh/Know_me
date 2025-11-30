@@ -4,8 +4,7 @@
 // This script allows users to click or tap on a testimonial card to see its full content in a pop-up (modal).
 // It's designed to work smoothly on both mobile and desktop devices.
 
-// We grab all the testimonial items on the page.
-const testimonialsItem = document.querySelectorAll("[data-testimonials-item]");
+let testimonialsItem = [];
 
 // These variables will help us manage the expanded testimonial's state.
 let expandedOverlay = null; // The dimmed background behind the pop-up.
@@ -37,6 +36,7 @@ function closeExpanded() {
     document.removeEventListener('keydown', escHandler);
     escHandler = null;
   }
+  isPaused = false;
 }
 
 // This function creates and displays the pop-up modal for a given testimonial item.
@@ -100,45 +100,160 @@ function toggleExpand(item) {
   // Otherwise, close any other open pop-up and then open the new one.
   closeExpanded();
   currentSourceItem = item;
+  isPaused = true;
   buildExpandedModalFrom(item);
 }
 
 // We go through each testimonial item to add interactive behavior.
-testimonialsItem.forEach(function (item) {
-  let pointerDown = false; // Tracks if a pointer (mouse/finger) is currently down.
-  let startX = 0;          // Starting X position of the pointer.
-  let startY = 0;          // Starting Y position of the pointer.
-  let pointerId = null;    // Unique ID for the pointer event.
+function attachItemEvents() {
+  testimonialsItem.forEach(function (item) {
+    let pointerDown = false;
+    let startX = 0;
+    let startY = 0;
+    let pointerId = null;
 
-  // When a pointer goes down on an item...
-  item.addEventListener('pointerdown', function (e) {
-    pointerDown = true;
-    startX = e.clientX;
-    startY = e.clientY;
-    pointerId = e.pointerId;
-    // We "capture" the pointer to ensure we get all subsequent events for this interaction.
-    try { item.setPointerCapture(pointerId); } catch {}
+    item.addEventListener('pointerdown', function (e) {
+      pointerDown = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      pointerId = e.pointerId;
+      try { item.setPointerCapture(pointerId); } catch {}
+    });
+
+    item.addEventListener('pointerup', function (e) {
+      if (!pointerDown) return;
+      pointerDown = false;
+      try { item.releasePointerCapture(pointerId); } catch {}
+      const dx = Math.abs(e.clientX - startX);
+      const dy = Math.abs(e.clientY - startY);
+      if (dx < 10 && dy < 10) {
+        toggleExpand(item);
+      }
+    });
+
+    item.addEventListener('pointercancel', function () {
+      pointerDown = false;
+      try { item.releasePointerCapture(pointerId); } catch {}
+    });
   });
+}
 
-  // When a pointer is lifted from an item...
-  item.addEventListener('pointerup', function (e) {
-    if (!pointerDown) return; // If pointer wasn't down, ignore.
-    pointerDown = false;
-    // Release the pointer capture.
-    try { item.releasePointerCapture(pointerId); } catch {}
-    // Calculate how much the pointer moved.
-    const dx = Math.abs(e.clientX - startX);
-    const dy = Math.abs(e.clientY - startY);
-    // If the movement was very small (i.e., it was a tap/click, not a drag/swipe)...
-    if (dx < 10 && dy < 10) {
-      toggleExpand(item); // ...then we toggle the testimonial expansion.
+const list = document.querySelector('article[data-page="about"] .testimonials .testimonials-list');
+const bar = document.querySelector('.testimonial-progress-bar');
+let isPaused = false;
+let autoRaf = null;
+let scrollSpeed = 0.4;
+let track = null;
+let offsetX = 0;
+
+function setupInfinite() {
+  if (!list) return;
+  if (!track) {
+    const children = Array.from(list.children);
+    if (children.length === 0) return;
+    track = document.createElement('div');
+    track.className = 'testimonial-track';
+    track.style.display = 'flex';
+    track.style.alignItems = 'stretch';
+    track.style.gap = getComputedStyle(list).gap || '24px';
+    track.style.willChange = 'transform';
+    // move existing children into track
+    children.forEach(ch => track.appendChild(ch));
+    // limited clones to ensure seamless loop
+    const maxClones = Math.min(8, children.length);
+    for (let i = 0; i < maxClones; i++) {
+      track.appendChild(children[i].cloneNode(true));
     }
-  });
+    list.innerHTML = '';
+    list.appendChild(track);
+    list.style.scrollSnapType = 'none';
+    list.style.overflowX = 'hidden';
+    list.style.position = 'relative';
+  }
+  testimonialsItem = list.querySelectorAll('[data-testimonials-item]');
+  attachItemEvents();
+}
+function updateProgress() {
+  if (!track || !bar) return;
+  const total = track.scrollWidth || track.getBoundingClientRect().width;
+  const pct = total > 0 ? ((offsetX % total) / total) * 100 : 0;
+  bar.style.width = pct + '%';
+}
+if (list) {
+  list.addEventListener('scroll', updateProgress, { passive: true });
+  window.addEventListener('resize', updateProgress);
+  requestAnimationFrame(updateProgress);
+}
 
-  // If the pointer interaction is cancelled (e.g., by a browser gesture)...
-  item.addEventListener('pointercancel', function () {
-    pointerDown = false;
-    // Release the pointer capture.
-    try { item.releasePointerCapture(pointerId); } catch {}
-  });
-});
+const items = document.querySelectorAll('.testimonials-item');
+const cards = document.querySelectorAll('.testimonial-card');
+const prevBtn = document.querySelector('.testimonial-nav.prev');
+const nextBtn = document.querySelector('.testimonial-nav.next');
+
+function closestIndex() {
+  if (!list || items.length === 0) return 0;
+  const center = list.clientWidth / 2;
+  let best = 0;
+  let bestDist = Infinity;
+  for (let i = 0; i < items.length; i++) {
+    const el = items[i];
+    const rect = el.getBoundingClientRect();
+    const elCenter = rect.left + rect.width / 2 - list.getBoundingClientRect().left;
+    const dist = Math.abs(elCenter - center);
+    if (dist < bestDist) { bestDist = dist; best = i; }
+  }
+  return best;
+}
+
+function markCenter() {
+  const idx = closestIndex();
+  for (let i = 0; i < items.length; i++) {
+    if (i === idx) items[i].classList.add('is-center'); else items[i].classList.remove('is-center');
+  }
+}
+
+function snapTo(index) {
+  if (index < 0) index = 0;
+  if (index > items.length - 1) index = items.length - 1;
+  const el = items[index];
+  if (el) el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+}
+
+if (list) {
+  let raf = null;
+  function onScroll() {
+    if (raf) return;
+    raf = requestAnimationFrame(() => { raf = null; markCenter(); });
+  }
+  list.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', markCenter);
+  requestAnimationFrame(markCenter);
+}
+
+if (prevBtn) prevBtn.addEventListener('click', () => { const i = closestIndex(); snapTo(i - 1); });
+if (nextBtn) nextBtn.addEventListener('click', () => { const i = closestIndex(); snapTo(i + 1); });
+
+function tick() {
+  if (!track) return;
+  if (!isPaused) {
+    offsetX += scrollSpeed;
+    const cs = getComputedStyle(list);
+    const gap = parseFloat(cs.gap) || 0;
+    const first = track.firstElementChild;
+    if (first) {
+      const wrapWidth = first.offsetWidth + gap;
+      if (offsetX >= wrapWidth) {
+        track.appendChild(first);
+        offsetX -= wrapWidth;
+      }
+    }
+    track.style.transform = `translateX(${-offsetX}px)`;
+    updateProgress();
+  }
+  autoRaf = requestAnimationFrame(tick);
+}
+
+if (list) {
+  setupInfinite();
+  requestAnimationFrame(tick);
+}

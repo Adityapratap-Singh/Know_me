@@ -1,29 +1,173 @@
-/**
- * #testimonials 
- */
+/* -----------------------------------*\
+  #TESTIMONIALS
+\*-----------------------------------*/
 
-.testimonials { margin-bottom: 30px; }
+.testimonials {
+  margin-bottom: 30px;
+  position: relative;
+}
 
-.testimonials-title { margin-bottom: 20px; }
+.testimonials-title {
+  margin-bottom: 20px;
+}
 
+/* --- List Container (Horizontal Scroll) --- */
 .testimonials-list {
   display: flex;
   justify-content: flex-start;
-  align-items: flex-start;
-  gap: 15px;
-  margin: 0 -15px;
-  padding: 25px 15px;
-  padding-bottom: 35px;
+  gap: 20px;
+  /* CRITICAL: Large padding allows the floating avatar to hang outside */
+  padding: 40px 20px 40px 30px; 
   overflow-x: auto;
   scroll-behavior: smooth;
-  overscroll-behavior-inline: contain;
-  scroll-snap-type: inline mandatory;
+  scroll-snap-type: x mandatory;
 }
 
+/* Scrollbar Styling */
+.testimonials-list::-webkit-scrollbar { display: none; }
+.testimonials-list.has-scrollbar::-webkit-scrollbar { height: 8px; }
+.testimonials-list.has-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.06); border-radius: 8px; }
+.testimonials-list.has-scrollbar::-webkit-scrollbar-thumb { background: #FFD369; border-radius: 8px; }
+
 .testimonials-item {
-  min-width: 100%;
-  scroll-snap-align: center;
+  flex: 0 0 280px;
+  max-width: 280px;
+  scroll-snap-align: start;
 }
+
+/* --- The Main Card Style --- */
+.testimonial-card {
+  position: relative;
+  /* Slightly darker top (#242424) to match the avatar box better */
+  background: linear-gradient(180deg, #242424 0%, #1c1c1c 100%);
+  border: 1px solid #383838;
+  border-radius: 14px;
+  /* Top padding prevents text from hitting the avatar area */
+  padding: 30px 20px 25px 20px;
+  box-shadow: 0 16px 30px rgba(0,0,0,0.2); 
+  overflow: visible !important; /* CRITICAL: Allows avatar to hang outside */
+  margin-top: 15px;
+  transition: transform .25s ease;
+  cursor: pointer;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-2px);
+  border-color: #555;
+}
+
+/* --- The Floating Avatar Box --- */
+.testimonials-avatar-box {
+  position: absolute;
+  top: -25px;
+  left: -25px;
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  /* The Dark Stealth Gradient */
+  background: linear-gradient(135deg, #2A2A2A 0%, #161616 100%);
+  border: 1px solid rgba(255,255,255,0.05);
+  box-shadow: 6px 6px 15px rgba(0,0,0,0.6);
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: floatHead 4s ease-in-out infinite;
+}
+
+/* The Avatar Image */
+.testimonials-avatar-box img {
+  /* FIXED: Set to 68px to fill the box perfectly */
+  width: 68px !important;
+  height: 68px !important;
+  border-radius: 16px;
+  object-fit: cover;
+  display: block;
+  background-color: #333; 
+}
+
+/* --- Text & Layout --- */
+
+/* Title: Pushed right to sit NEXT to the avatar */
+.testimonials-item-title {
+  margin-left: 65px; 
+  margin-bottom: 12px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+/* Review Text */
+.testimonials-text {
+  position: relative;
+  max-height: 80px; 
+  overflow: hidden;
+}
+
+/* The Fade Effect at bottom of text */
+.testimonials-text::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  /* FIXED: Set to 35px (removed the conflicting 50px rule) */
+  height: 35px;
+  /* Rounded corners to match card */
+  border-radius: 0 0 14px 14px;
+  /* Smooth transparent-to-card-color gradient */
+  background: linear-gradient(to bottom, rgba(28,28,28,0) 0%, #1c1c1c 100%);
+  pointer-events: none;
+}
+
+.testimonials-text p {
+  color: #d6d6d6;
+  font-size: 0.95rem;
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+/* --- Animations --- */
+@keyframes floatHead {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); } 
+}
+
+/* --- Navigation Buttons --- */
+.testimonial-nav { 
+  position: absolute; 
+  top: 50%; 
+  transform: translateY(-50%); 
+  width: 40px; 
+  height: 40px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  border-radius: 50%; 
+  background: rgba(32,32,32,0.8); 
+  backdrop-filter: blur(4px); 
+  color: #fff; 
+  cursor: pointer; 
+  z-index: 20; 
+  border: 1px solid #444;
+}
+.testimonial-nav:hover { background: #FFD369; color: #000; }
+.testimonial-nav.prev { left: -10px; display: none; } 
+.testimonial-nav.next { right: -10px; display: none; }
+
+/* --- MODAL (Expanded View) --- */
+.modal-container { position: fixed; inset: 0; display: flex; justify-content: center; align-items: center; z-index: 9999; pointer-events: none; visibility: hidden; }
+.modal-container.active { pointer-events: all; visibility: visible; }
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(2px); }
+.overlay.active { opacity: 1; visibility: visible; }
+.testimonials-modal { background: #1c1c1c; padding: 25px; border: 1px solid #333; border-radius: 14px; width: 90%; max-width: 600px; transform: scale(0.9); opacity: 0; transition: 0.3s; z-index: 10000; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+.modal-container.active .testimonials-modal { transform: scale(1); opacity: 1; }
+.modal-close-btn { position: absolute; top: 15px; right: 15px; background: #2a2a2a; color: #fff; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; }
+.modal-avatar-box { width: 60px; height: 60px; border-radius: 14px; overflow: hidden; margin-bottom: 15px; }
+.modal-avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+.modal-title { color: #fff; margin-bottom: 10px; font-size: 1.2rem; }
+.modal-content p { color: #ccc; line-height: 1.6; }
 
 /* Expanded centered testimonial (overlay + card) */
 /* Expanded centered testimonial (overlay + card) */
@@ -109,143 +253,4 @@
   line-clamp: unset !important;
   overflow: visible !important;
   white-space: normal !important;
-}
-
-
-.testimonials-avatar-box {
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform: translate(15px, -25px);
-  background: var(--bg-gradient-onyx);
-  border-radius: 14px;
-  box-shadow: var(--shadow-1);
-}
-
-.testimonials-item-title { margin-bottom: 7px; }
-
-.testimonials-text {
-  color: var(--light-gray);
-  font-size: var(--fs-6);
-  font-weight: var(--fw-300);
-  line-height: 1.6;
-  display: -webkit-box;
-  line-clamp: 4;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-
-/**
- * #testimonials-modal
- */
-
-.modal-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  z-index: 20;
-  pointer-events: none;
-  visibility: hidden;
-}
-
-.modal-container::-webkit-scrollbar { display: none; }
-
-.modal-container.active {
-  pointer-events: all;
-  visibility: visible;
-}
-
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  background: hsl(0, 0%, 5%);
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  z-index: 1;
-  transition: var(--transition-1);
-}
-
-.overlay.active {
-  opacity: 0.8;
-  visibility: visible;
-  pointer-events: all;
-}
-
-.testimonials-modal {
-  background: var(--eerie-black-2);
-  position: relative;
-  padding: 15px;
-  margin: 15px 12px;
-  border: 1px solid var(--jet);
-  border-radius: 14px;
-  box-shadow: var(--shadow-5);
-  transform: scale(1.2);
-  opacity: 0;
-  transition: var(--transition-1);
-  z-index: 2;
-}
-
-.modal-container.active .testimonials-modal {
-  transform: scale(1);
-  opacity: 1;
-}
-
-.modal-close-btn {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: var(--onyx);
-  border-radius: 8px;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: var(--white-2);
-  font-size: 18px;
-  opacity: 0.7;
-}
-
-.modal-close-btn:hover,
-.modal-close-btn:focus { opacity: 1; }
-
-.modal-close-btn ion-icon { --ionicon-stroke-width: 50px; }
-
-.modal-avatar-box {
-  background: var(--bg-gradient-onyx);
-  width: max-content;
-  border-radius: 14px;
-  margin-bottom: 15px;
-  box-shadow: var(--shadow-2);
-}
-
-.modal-img-wrapper > img { display: none; }
-
-.modal-title { margin-bottom: 4px; }
-
-.modal-content time {
-  font-size: var(--fs-6);
-  color: var(--light-gray-70);
-  font-weight: var(--fw-300);
-  margin-bottom: 10px;
-}
-
-.modal-content p {
-  color: var(--light-gray);
-  font-size: var(--fs-6);
-  font-weight: var(--fw-300);
-  line-height: 1.6;
 }

@@ -9,26 +9,45 @@ const experience = require('../models/experience');
 const skill = require('../models/skill');
 const project = require('../models/project');
 const client = require('..//models/client'); // Our client data model
+const mongoose = require('mongoose');
 
 // Redirects the user from the root path to the main profile page.
 module.exports.homeRedirect = (req, res) => {
-    res.redirect("/profile");
+    try {
+        res.redirect("/profile");
+    } catch (err) {
+        console.error(err);
+        res.status(500).render('error', { message: 'Failed to redirect to profile page.' });
+    }
 };
 
 // Renders the main profile page, showing 'What I Do' items, testimonials, and client logos.
 module.exports.renderProfile = async (req, res) => {
     try {
-        // Fetch all 'What I Do' entries.
-        const Wid = await whatDoIDo.find();
-        // Fetch all testimonials.
-        const testi = await testimonial.find();
-        // Fetch all client logos and details.
-        const clients = await client.find();
-        // Render the profile page with all the fetched data.
-        res.render('profile/profile', { whatDoIDo: Wid, testimonials: testi, clients: clients, currentPage: 'profile' });
+        const [Wid, testi, clients] = await Promise.all([
+            whatDoIDo.find().lean().catch(() => []),
+            testimonial.find().lean().catch(() => []),
+            client.find().lean().catch(() => [])
+        ]);
+        const online = mongoose.connection && mongoose.connection.readyState === 1;
+        const fallbackWid = [
+            { title: 'Web Development', description: 'Responsive websites and APIs.' },
+            { title: 'UI/UX Design', description: 'Clean, accessible interfaces.' }
+        ];
+        const fallbackTesti = [
+            { name: 'Happy Client', position: 'Founder', testimonial: 'Professional and reliable delivery.' },
+            { name: 'Project Lead', position: 'Manager', testimonial: 'Strong problem-solving and ownership.' }
+        ];
+        res.render('profile/profile', {
+            whatDoIDo: Wid && Wid.length ? Wid : (online ? Wid : fallbackWid),
+            testimonials: testi && testi.length ? testi : (online ? testi : fallbackTesti),
+            clients: clients || [],
+            currentPage: 'profile',
+            dbOnline: online
+        });
     } catch (err) {
-        // If something goes wrong, we send an error message.
-        res.status(500).send(err.message);
+        console.error(err);
+        res.status(500).render('error', { message: 'Failed to load profile data.' });
     }
 };
 
@@ -45,7 +64,8 @@ module.exports.renderResume = async (req, res) => {
         res.render('profile/resume', { education: edu, experience: exp, skills: skl, currentPage: 'resume' });
     } catch (err) {
         // If something goes wrong, we send an error message.
-        res.status(500).send(err.message);
+        console.error(err);
+        res.status(500).render('error', { message: 'Failed to load resume data.' });
     }
 };
 
@@ -54,15 +74,23 @@ module.exports.renderPortfolio = async (req, res) => {
     try {
         // Fetch all project entries.
         const proj = await project.find();
-        // Render the portfolio page with the fetched project data.
-        res.render('profile/portfolio', { projects: proj, currentPage: 'portfolio' });
+        // Get the enum values for the 'category' field from the Project model schema
+        const categories = project.schema.path('category').enumValues;
+        // Render the portfolio page with the fetched project data and categories.
+        res.render('profile/portfolio', { projects: proj, categories: categories, currentPage: 'portfolio' });
     } catch (err) {
         // If something goes wrong, we send an error message.
-        res.status(500).send(err.message);
+        console.error(err);
+        res.status(500).render('error', { message: 'Failed to load portfolio data.' });
     }
 };
 
 // Renders the blog page.
 module.exports.renderBlog = (req, res) => {
-    res.render('profile/blog', { currentPage: 'blog' });
+    try {
+        res.render('profile/blog', { currentPage: 'blog' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).render('error', { message: 'Failed to load blog page.' });
+    }
 };

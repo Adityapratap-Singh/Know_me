@@ -46,6 +46,7 @@ This is a dynamic and interactive portfolio website built with Node.js, Express.
 - **Frontend**:
     - EJS (Embedded JavaScript templates)
     - HTML5, CSS3, JavaScript
+    - Bootstrap (from CDN)
     - Ion-icons (for icons)
 - **Authentication & Security**:
     - `express-session` (for session management)
@@ -145,15 +146,19 @@ For the modular frontend JavaScript to work correctly, you **must** update the `
 
 ## Running the Application
 
-To start the development server:
+To start the application, you can use one of the following commands:
 
-```bash
-npm start
-```
-or if you have `nodemon` installed globally for development:
-```bash
-npm run dev
-```
+-   **For production:**
+    ```bash
+    npm start
+    ```
+    This command runs the application using `node`.
+
+-   **For development:**
+    ```bash
+    npm run dev
+    ```
+    This command uses `nodemon` to automatically restart the server whenever you make changes to the code.
 
 The server will typically run on `http://localhost:8080` (or the port specified in your `.env` file).
 
@@ -233,3 +238,24 @@ The server will typically run on `http://localhost:8080` (or the port specified 
 -   **Rich Text Editor**: Integrate a rich text editor for blog posts and descriptions in the admin panel.
 -   **Pagination/Lazy Loading**: For large lists of projects, testimonials, or contacts.
 -   **Accessibility**: Improve accessibility features for all users.
+
+## Code of Conduct
+
+Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
+
+## License
+
+This project is licensed under the ISC License. See the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Contributions are welcome! If you'd like to contribute to this project, please follow these steps:
+
+1.  **Fork the repository.**
+2.  **Create a new branch** for your feature or bug fix:
+    ```bash
+    git checkout -b feature-name
+    ```
+3.  **Make your changes** and commit them with a clear and descriptive message.
+4.  **Push your changes** to your forked repository.
+5.  **Create a pull request** to the main repository, explaining the changes you've made.
