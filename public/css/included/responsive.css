@@ -576,21 +576,21 @@ z
 
 
   /**
-   * MAIN
+   * #MAIN
    */
 
   main {
     max-width: 1200px;
     margin-inline: auto;
     display: flex;
-    justify-content: center;
+    justify-content: flex;
     align-items: stretch;
-    gap: 25px;
+    gap: 10px;
   }
 
   .main-content {
-    min-width: 75%;
-    width: 75%;
+    flex: 1;
+    min-width: 0;
     margin: 0;
   }
 

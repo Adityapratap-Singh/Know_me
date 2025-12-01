@@ -46,7 +46,10 @@
                         <%= exp.company %>
                     </span>
                 </h4>
-                <span class="timeline-date"><%= exp.startDate %> to <%= exp.endDate %></span>
+                <span>
+                    <%= new Date(exp.startDate).getFullYear() %> —
+                    <%= new Date(exp.endDate).getFullYear() %>
+                </span>
                 <ol>
                     <% exp.responsibilities.forEach(function(resp) { %>
                         <li><p class="timeline-text"> <%= resp %> </p></li>

@@ -3,15 +3,32 @@
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <div class="card">
-                <div class="card-header bg-danger text-white">
-                    <h5 class="card-title">An Error Occurred</h5>
+            <div class="card text-center shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-danger text-white py-3 rounded-top">
+                    <h3 class="card-title mb-0">Oops! Something Went Wrong</h3>
                 </div>
-                <div class="card-body">
-                    <p class="card-text"><%= message %></p>
-                    <a href="/" class="btn btn-primary">Go to Homepage</a>
+                <div class="card-body p-5">
+                    <h4 class="text-danger mb-4">Error Details:</h4>
+                    <p class="card-text lead mb-4"><%= message %></p>
+                    
+                    <p class="text-muted mb-4">
+                        We apologize for the inconvenience. Please try the following:
+                    </p>
+                    <ul class="list-unstyled mb-4">
+                        <li><i class="fas fa-sync-alt me-2"></i> Try refreshing the page.</li>
+                        <li><i class="fas fa-home me-2"></i> Go back to the homepage.</li>
+                        <li><i class="fas fa-question-circle me-2"></i> If the problem persists, please contact support.</li>
+                    </ul>
+
+                    <div class="d-grid gap-2 col-6 mx-auto">
+                        <a href="/" class="btn btn-primary btn-lg">Go to Homepage</a>
+                        <a href="/contact" class="btn btn-outline-secondary btn-lg">Contact Support</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Font Awesome for icons (assuming it's linked in boilerPlate.ejs or globally) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />

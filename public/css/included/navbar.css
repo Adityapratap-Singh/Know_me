@@ -13,10 +13,6 @@
   border-radius: 12px 12px 0 0;
   box-shadow: var(--shadow-2);
   z-index: 5;
-  display: flex; /* Make navbar a flex container */
-  justify-content: space-between; /* Space out navbar-list and social-list */
-  align-items: center; /* Vertically align items */
-  padding: 0 10px; /* Add some padding to the navbar itself */
 }
 
 .navbar-list {
@@ -24,6 +20,7 @@
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
+  padding: 0 10px;
 }
 
 .navbar-link {
@@ -59,52 +56,100 @@
   display: none; /* Hidden by default */
 }
 
+/*-----------------------------------*\
+  #MOBILE NAVBAR FIX (Tab Bar Style)
+\*-----------------------------------*/
+
 @media (max-width: 579px) {
   .navbar {
-    flex-direction: column; /* Stack items vertically on small screens */
-    padding: 5px 0; /* Reduced padding */
-    flex-wrap: wrap; /* Allow children to wrap */
-    width: 100vw; /* Force width to 100% of viewport width */
-    left: 0; /* Ensure it starts from the left edge */
-    right: 0; /* Ensure it ends at the right edge */
+    flex-direction: column;
+    padding: 0; /* Remove padding to maximize space */
+    width: 100vw;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 12px 12px 0 0;
+    background: hsla(240, 1%, 17%, 0.95); /* Slightly less transparent for readability */
   }
 
   .navbar-list {
-    flex-grow: 1; /* Allow it to grow */
-    flex-shrink: 1; /* Allow it to shrink */
-    justify-content: space-evenly; /* Distribute items evenly */
-    margin-bottom: 5px; /* Reduced margin */
-    min-width: 0; /* Allow flex items to shrink below their content size */
+    display: flex;
+    justify-content: space-between; /* Push items to edges */
+    align-items: flex-end; /* Align to bottom */
+    width: 100%;
+    margin: 0;
+    padding: 10px 15px; /* Add breathing room on sides */
   }
 
-  .navbar-item-text {
-    display: none; /* Hide text labels on small screens */
+  .navbar-item {
+    width: 20%; /* Each item takes equal width */
+    display: flex;
+    justify-content: center;
   }
 
   .navbar-link {
-    padding: 8px 5px; /* Reduced padding for icon-only display */
-    justify-content: center; /* Center the icon */
-    flex-grow: 1; /* Allow links to grow */
-    flex-shrink: 1; /* Allow links to shrink */
-    min-width: 0; /* Allow links to shrink below their content size */
+    display: flex;
+    flex-direction: column; /* STACKS Icon above Text */
+    align-items: center;
+    gap: 4px;
+    padding: 5px;
+    width: 100%;
+    color: var(--light-gray) !important; /* Force Light Grey */
   }
 
+  /* 1. ICON STYLING */
+  .navbar-link ion-icon {
+    display: block !important;
+    font-size: 20px; /* Standard mobile icon size */
+    margin-bottom: 0;
+    color: var(--light-gray) !important; 
+    transition: transform 0.2s ease;
+  }
+
+  /* 2. TEXT STYLING (Visible but compact) */
+  .navbar-item-text {
+    display: block !important;
+    font-size: 10px; /* Small enough to fit, big enough to read */
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    color: var(--light-gray) !important;
+  }
+
+  /* 3. ACTIVE STATE (Subtle) */
+  .navbar-link.active {
+    background: rgba(255, 255, 255, 0.05); /* Very subtle highlight box */
+    border-radius: 8px;
+  }
+  
+  .navbar-link.active ion-icon {
+    transform: translateY(-2px); /* Slight pop up */
+    color: #fff !important; /* Slightly brighter for active, or keep var(--light-gray) */
+  }
+  
+  .navbar-link.active .navbar-item-text {
+    color: #fff !important;
+    font-weight: 600;
+  }
+
+  /* Hide the yellow underline bar on mobile (it's too crowded) */
+  .navbar-link.active::after {
+    display: none;
+  }
+
+  /* Social Icons (Condensed at bottom) */
   .mobile-social-list {
-    display: flex; /* Show on small screens */
-    justify-content: space-evenly; /* Distribute social icons evenly */
-    gap: 0; /* Remove gap to prevent overflow */
-    width: 100%; /* Take full width */
-    min-width: 0; /* Allow flex items to shrink below their content size */
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding-bottom: 8px;
+    /* background: rgba(0,0,0,0.2); distinct background area */
+    border-top: 1px solid rgba(255,255,255,0.05);
   }
 
   .mobile-social-list .social-link {
-    font-size: 20px; /* Slightly smaller icons for mobile */
+    font-size: 16px;
+    padding: 8px;
     color: var(--light-gray-70);
-    padding: 3px; /* Reduced padding to social links */
-  }
-
-  .mobile-social-list .social-link:hover {
-    color: var(--light-gray);
   }
 }
 
@@ -112,4 +157,122 @@
   .mobile-social-list {
     display: none; /* Hide on larger screens */
   }
+  .navbar-list {
+    flex-wrap: nowrap;
+    gap: 20px;
+  }
+}
+
+@media (min-width: 580px) {
+  .navbar {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 520px;
+  }
+}
+
+@media (min-width: 768px) {
+  .navbar {
+    max-width: 700px;
+  }
+}
+
+@media (min-width: 1000px) {
+
+  .navbar {
+    /* 1. FORCE Positioning to Top-Right */
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: auto !important;
+
+    /* 2. CANCEL the Centering (Crucial) */
+    left: auto !important;
+    transform: none !important;
+
+    /* 3. SHRINK width to fit content only */
+    width: max-content !important;
+    max-width: none !important;
+
+    /* 4. Styling Polish */
+    border-radius: 0 20px 0 20px !important;
+    padding: 10px 20px !important;
+    box-shadow: none !important;
+    background: hsla(240, 2%, 12%, 0.8) !important; /* Slightly clearer bg */
+  }
+
+  /* Add space between the links */
+  .navbar-list {
+    gap: 30px !important;
+    padding: 0 !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .navbar {
+    /* 1. POSITIONING: Snap to Top-Right */
+    position:absolute !important;
+    top: 0 !important;
+    right: 0% !important;
+    bottom: auto !important;
+    left: auto !important;
+    transform: none !important;
+
+    /* 2. WIDTH: Shrink to fit text only */
+    width: max-content !important;
+    max-width: none !important;
+
+    /* 3. SHAPE: Corner tab style */
+    border-radius: 0 20px 0 20px !important;
+    padding: 0 10px !important; /* Reduced container padding */
+    box-shadow: none !important;
+    background: hsla(240, 2%, 12%, 0.8) !important;
+  }
+
+  .navbar-list {
+    gap: 20px !important; /* Reduces space between words */
+    padding: 0 !important;
+  }
+
+  .navbar-link {
+    /* 4. HEIGHT: Reduce padding (Standard was 16px, this is 10px) */
+    padding: 10px 0px !important; 
+    font-size: 16px !important; /* Optional: Slightly smaller text */
+  }
+}
+
+@media (min-width: 1300px) {
+  .navbar {
+    /* 1. POSITIONING: Snap to Top-Right */
+    position:absolute !important;
+    top: 0 !important;
+    right: 9.21% !important;
+    bottom: auto !important;
+    left: auto !important;
+    transform: none !important;
+
+    /* 2. WIDTH: Shrink to fit text only */
+    width: max-content !important;
+    max-width: none !important;
+    font-size: 20px !important;
+
+    /* 3. SHAPE: Corner tab style */
+    border-radius: 0 20px 0 20px !important;
+    padding: 0 10px !important; /* Reduced container padding */
+    box-shadow: none !important;
+    background: hsla(240, 2%, 12%, 0.8) !important;
+  }
+
+  .navbar-list {
+    gap: 30px !important; /* Reduces space between words */
+    padding: 0 !important;
+  }
+
+  .navbar-link {
+    /* 4. HEIGHT: Reduce padding (Standard was 16px, this is 10px) */
+    padding: 10px 0px !important; 
+    font-size: 16px !important; /* Optional: Slightly smaller text */
+  }
+
 }

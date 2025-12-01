@@ -66,16 +66,19 @@
   margin-bottom: 10px;
 }
 
-.project-item { display: none; }
-
-.project-item.active {
-  display: block;
-  animation: scaleUp 0.25s ease forwards;
+.project-item {
+  opacity: 0;
+  visibility: hidden;
+  height: 0; /* Start with height 0 */
+  overflow: hidden;
+  transition: opacity var(--transition-1), visibility var(--transition-1), height var(--transition-1);
 }
 
-@keyframes scaleUp {
-  0% { transform: scale(0.5); }
-  100% { transform: scale(1); }
+.project-item.active {
+  opacity: 1;
+  visibility: visible;
+  height: auto; /* Allow content to define height */
+  transition: opacity var(--transition-1), visibility var(--transition-1), height var(--transition-1);
 }
 
 .project-item > a { width: 100%; }

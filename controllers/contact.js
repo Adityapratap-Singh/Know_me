@@ -20,7 +20,8 @@ const uploadWithErrorHandler = (req, res, next) => {
     upload.single('attachment')(req, res, (err) => {
         if (err) {
             console.error('Uh oh, a file upload error occurred:', err);
-            return res.status(500).send('We had trouble uploading your file. Please try again!');
+            // Send JSON error response for AJAX
+            return res.status(500).json({ message: 'We had trouble uploading your file. Please try again!' });
         }
         // If all goes well, we move on to the next step.
         next();
@@ -85,20 +86,22 @@ module.exports.submitContactForm = async (req, res) => {
 
         // Send Telegram notification
         try {
-            let message = `New Contact Message!\n\nName: ${newContact.name}\nEmail: ${newContact.email}\nPhone: ${newContact.phone || 'N/A'}\nMessage: ${newContact.message}`;
+            let telegramMessage = `New Contact Message!\n\nName: ${newContact.name}\nEmail: ${newContact.email}\nPhone: ${newContact.phone || 'N/A'}\nMessage: ${newContact.message}`;
             if (newContact.attachment && newContact.attachment.url) {
-                message += `\nAttachment: ${newContact.attachment.url}`;
+                telegramMessage += `\nAttachment: ${newContact.attachment.url}`;
             }
-            await bot.sendMessage(process.env.TELEGRAM_CHAT_ID, message);
+            await bot.sendMessage(process.env.TELEGRAM_CHAT_ID, telegramMessage);
             console.log('Telegram notification sent successfully.');
         } catch (telegramError) {
             console.error('Failed to send Telegram notification:', telegramError);
         }
 
-        res.redirect('/profile'); // Send the user back to the profile page.
+        // Send JSON success response for AJAX
+        res.status(200).json({ message: 'Message sent successfully!' });
     } catch (err) {
         console.error('Oops! There was an error saving the contact message:', err);
-        res.status(500).render('error', { message: 'We couldn\'t save your message right now. Please try again!' });
+        // Send JSON error response for AJAX
+        res.status(500).json({ message: 'We couldn\'t save your message right now. Please try again!' });
     }
 };
 
