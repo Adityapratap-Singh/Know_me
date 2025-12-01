@@ -1,6 +1,6 @@
 'use strict';
 
-const form = document.querySelector("[data-form]");
+const form = document.querySelector('[data-form="contact"]');
 const formInputs = document.querySelectorAll("[data-form-input]");
 const formBtn = document.querySelector("[data-form-btn]");
 const formFeedback = document.getElementById('form-feedback');

@@ -10,20 +10,20 @@ const { uploadWithErrorHandler } = contactController;
 router.get('/contact', contactController.renderContactForm);
 router.post('/contact', uploadWithErrorHandler, contactController.submitContactForm);
 
-router.get('/verify-contacts', isVerified, contactController.renderVerifyContacts);
-router.post('/verify-contacts', isVerified, contactController.verifyContacts);
+router.get('/verify-contacts', contactController.renderVerifyContacts);
+router.post('/verify-contacts', contactController.verifyContacts);
 
-router.get('/view-contacts', isVerified, isContactsVerified, contactController.viewContacts);
+router.get('/view-contacts', isContactsVerified, contactController.viewContacts);
 
 // Route to view a single contact
-router.get('/contacts/:id', isVerified, isContactsVerified, contactController.viewSingleContact);
+router.get('/contacts/:id', isContactsVerified, contactController.viewSingleContact);
 
-router.delete('/contacts/:id', isVerified, isContactsVerified, contactController.deleteContact);
+router.delete('/contacts/:id', isContactsVerified, contactController.deleteContact);
 
 // Route to render the edit form for a single contact
-router.get('/contacts/:id/edit', isVerified, isContactsVerified, contactController.renderEditContactForm);
+router.get('/contacts/:id/edit', isContactsVerified, contactController.renderEditContactForm);
 
 // Route to handle the update of a single contact
-router.put('/contacts/:id', isVerified, isContactsVerified, uploadWithErrorHandler, contactController.updateContact);
+router.put('/contacts/:id', isContactsVerified, uploadWithErrorHandler, contactController.updateContact);
 
 module.exports = router;
