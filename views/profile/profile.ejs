@@ -71,20 +71,20 @@
       </section>
 
       <%# Section for Clients %>
-      <section class="clients"> 
+      <!-- <section class="clients"> 
           <h3 class="h3 clients-title">Clients</h3>
           <ul class="clients-list has-scrollbar">
             <%# Loop through each client and display their logo and website link. %>
-            <% clients.forEach(function(client) { %>
+            % clients.forEach(function(client) { %>
             <li class="clients-item">
-              <a href="<%= client.website %>" target="_blank" rel="noopener noreferrer">
+              <a href="%= client.website %>" target="_blank" rel="noopener noreferrer">
                 <div class="client-logo-container">
-                  <img src="<%= client.logo.url %>" alt="<%= client.name %> logo">
+                  <img src="%= client.logo.url %>" alt="<%= client.name %> logo">
                 </div>
               </a>
             </li>
-            <% }); %>
+            % }); %>
           </ul>
-        </section>
+        </section> -->
     </div>
 </article>
