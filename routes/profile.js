@@ -10,6 +10,7 @@ router.get('/profile', profileController.renderProfile);
 
 // RESUME
 router.get('/resume', profileController.renderResume);
+router.get('/resume/download', profileController.downloadResume);
 
 // PORTFOLIO
 router.get('/portfolio', profileController.renderPortfolio);

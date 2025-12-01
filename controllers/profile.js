@@ -10,6 +10,10 @@ const skill = require('../models/skill');
 const project = require('../models/project');
 const client = require('..//models/client'); // Our client data model
 const mongoose = require('mongoose');
+const path = require('path');
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
 
 // Redirects the user from the root path to the main profile page.
 module.exports.homeRedirect = (req, res) => {
@@ -92,5 +96,39 @@ module.exports.renderBlog = (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).render('error', { message: 'Failed to load blog page.' });
+    }
+};
+
+module.exports.downloadResume = (req, res) => {
+    try {
+        const defaultPath = path.join(__dirname, '../public/assets/resume.pdf');
+        const configuredPath = process.env.RESUME_FILE ? path.resolve(process.env.RESUME_FILE) : defaultPath;
+        if (fs.existsSync(configuredPath)) {
+            return res.download(configuredPath, 'Adityapratap_Singh_Resume.pdf');
+        }
+        const resumeUrl = process.env.RESUME_URL;
+        if (resumeUrl) {
+            const clientProto = resumeUrl.startsWith('https') ? https : http;
+            res.setHeader('Content-Disposition', 'attachment; filename="Adityapratap_Singh_Resume.pdf"');
+            clientProto.get(resumeUrl, (fileRes) => {
+                if (fileRes.statusCode >= 400) {
+                    return res.status(502).render('error', { message: 'Failed to fetch resume file.' });
+                }
+                if (fileRes.headers['content-type']) {
+                    res.setHeader('Content-Type', fileRes.headers['content-type']);
+                } else {
+                    res.setHeader('Content-Type', 'application/pdf');
+                }
+                fileRes.pipe(res);
+            }).on('error', (err) => {
+                console.error(err);
+                res.status(500).render('error', { message: 'Failed to download resume.' });
+            });
+            return;
+        }
+        res.status(404).render('error', { message: 'Resume file not configured.' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).render('error', { message: 'Failed to download resume.' });
     }
 };

@@ -97,7 +97,7 @@ module.exports.submitContactForm = async (req, res) => {
         }
 
         // Send JSON success response for AJAX
-        res.status(200).json({ message: 'Message sent successfully!' });
+        res.status(200).json({ message: 'Your response has been shared and saved.' });
     } catch (err) {
         console.error('Oops! There was an error saving the contact message:', err);
         // Send JSON error response for AJAX
@@ -192,4 +192,99 @@ module.exports.deleteContact = async (req, res) => {
 };
 
 // We're making our custom file upload error handler available for use in our routes.
+// We're making our custom file upload error handler available for use in our routes.
+module.exports.renderEditContactForm = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const foundContact = await contact.findById(id);
+        if (!foundContact) {
+            return res.status(404).render('error', { message: 'Sorry, we couldn\'t find that contact message to edit.' });
+        }
+        res.render('inputs/updatingContact', { contact: foundContact, action: 'edit', currentPage: 'update-contact' });
+    } catch (err) {
+        console.error('Oops! There was an error fetching the contact message for editing:', err);
+        res.status(500).render('error', { message: 'We couldn\'t load the edit form right now. Please try again!' });
+    }
+};
+
+// Updates a specific contact message and its associated attachment.
+module.exports.updateContact = async (req, res) => {
+    console.log('Attempting to update contact with ID:', req.params.id);
+    console.log('Request body:', req.body);
+    console.log('Attached file (if any):', req.file);
+
+    try {
+        const { id } = req.params;
+        const { name, email, phone, message } = req.body;
+
+        const updatedContact = await contact.findByIdAndUpdate(id, { name, email, phone, message }, { new: true, runValidators: true });
+
+        if (!updatedContact) {
+            return res.status(404).render('error', { message: 'Sorry, we couldn\'t find that contact message to update.' });
+        }
+
+        // Handle attachment update
+        if (req.file) {
+            // If there\'s an old attachment, delete it from Supabase
+            if (updatedContact.attachment && updatedContact.attachment.filename) {
+                console.log('Deleting old attachment from Supabase:', updatedContact.attachment.filename);
+                const { error: removeError } = await supabase.storage
+                    .from(process.env.SUPABASE_BUCKET)
+                    .remove([`attachments/${updatedContact.attachment.filename}`]);
+
+                if (removeError) {
+                    console.error('Supabase old attachment deletion failed:', removeError);
+                } else {
+                    console.log('Supabase old attachment deleted successfully.');
+                }
+            }
+
+            // Upload new attachment to Supabase
+            const uniqueFilename = `attachments/${Date.now()}-${req.file.originalname}`;
+            const { data, error: uploadError } = await supabase.storage
+                .from(process.env.SUPABASE_BUCKET)
+                .upload(uniqueFilename, req.file.buffer, {
+                    contentType: req.file.mimetype,
+                    cacheControl: '3600',
+                    upsert: false,
+                });
+
+            if (uploadError) {
+                throw uploadError;
+            }
+
+            const { data: urlData, error: urlError } = supabase.storage.from(process.env.SUPABASE_BUCKET).getPublicUrl(uniqueFilename);
+            if (urlError) {
+                throw urlData;
+            }
+
+            updatedContact.attachment = { url: urlData.publicUrl, filename: req.file.originalname };
+            await updatedContact.save(); // Save the updated attachment info
+        } else if (req.body.deleteAttachment === 'true') {
+            // If deleteAttachment checkbox is checked and no new file is uploaded
+            if (updatedContact.attachment && updatedContact.attachment.filename) {
+                console.log('Deleting attachment from Supabase as requested:', updatedContact.attachment.filename);
+                const { error: removeError } = await supabase.storage
+                    .from(process.env.SUPABASE_BUCKET)
+                    .remove([`attachments/${updatedContact.attachment.filename}`]);
+
+                if (removeError) {
+                    console.error('Supabase attachment deletion failed:', removeError);
+                } else {
+                    console.log('Supabase attachment deleted successfully.');
+                }
+            }
+            updatedContact.attachment = undefined; // Remove attachment reference from DB
+            await updatedContact.save();
+        }
+
+
+        console.log('Contact message updated successfully:', updatedContact);
+        res.redirect(`/contacts/${updatedContact._id}`); // Redirect to the single contact view
+    } catch (err) {
+        console.error('Oops! There was an error updating the contact message:', err);
+        res.status(500).render('error', { message: 'We couldn\'t update that contact message right now. Please try again!' });
+    }
+};
+
 module.exports.uploadWithErrorHandler = uploadWithErrorHandler;

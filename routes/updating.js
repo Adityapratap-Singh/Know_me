@@ -84,6 +84,26 @@ router.get('/client/edit/:id', isVerified, updatingController.renderEditClient);
 // Process the submission to update an existing client, including logo upload and validation
 router.put('/client/edit/:id', isVerified, upload.single('logo'), validateImageDimensions, updatingController.editClient);
 
+// Show the form to edit existing experience details
+router.get('/experience/edit/:id', isVerified, updatingController.renderEditExperience);
+// Process the submission to update existing experience details
+router.put('/experience/edit/:id', isVerified, updatingController.editExperience);
+
+// Show the form to edit existing skill details
+router.get('/skill/edit/:id', isVerified, updatingController.renderEditSkill);
+// Process the submission to update existing skill details
+router.put('/skill/edit/:id', isVerified, updatingController.editSkill);
+
+// Show the form to edit an existing testimonial
+router.get('/testimonial/edit/:id', isVerified, updatingController.renderEditTestimonial);
+// Process the submission to update an existing testimonial, including image upload
+router.put('/testimonial/edit/:id', isVerified, upload.single('image'), validateImageDimensions, updatingController.editTestimonial);
+
+// Show the form to edit an existing "What I Do" item
+router.get('/whatDoIDo/edit/:id', isVerified, updatingController.renderEditWhatDoIDo);
+// Process the submission to update an existing "What I Do" item, including icon upload
+router.put('/whatDoIDo/edit/:id', isVerified, upload.single('icon'), validateImageDimensions, updatingController.editWhatDoIDo);
+
 /* --- Routes for Deleting Data --- */
 
 // Show the page to select a contact to delete

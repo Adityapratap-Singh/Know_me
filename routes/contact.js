@@ -20,4 +20,10 @@ router.get('/contacts/:id', isVerified, isContactsVerified, contactController.vi
 
 router.delete('/contacts/:id', isVerified, isContactsVerified, contactController.deleteContact);
 
+// Route to render the edit form for a single contact
+router.get('/contacts/:id/edit', isVerified, isContactsVerified, contactController.renderEditContactForm);
+
+// Route to handle the update of a single contact
+router.put('/contacts/:id', isVerified, isContactsVerified, uploadWithErrorHandler, contactController.updateContact);
+
 module.exports = router;

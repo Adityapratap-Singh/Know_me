@@ -36,6 +36,13 @@
             <div class="input-wrapper">
                 <input type="url" name="link" class="form-input" value="<%= data.link %>">
                 <input type="file" name="image" class="form-input">
+                <% if (data.image && data.image.url) { %>
+                    <p>Current Image: <a href="<%= data.image.url %>" target="_blank"><%= data.image.filename %></a></p>
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="deleteImage" name="deleteImage" value="true">
+                        <label for="deleteImage">Delete Current Image</label>
+                    </div>
+                <% } %>
             </div>
             <textarea name="description" class="form-input" required><%= data.description %></textarea>
             <input type="text" name="technologies" class="form-input" value="<%= data.technologies.join(', ') %>" required>

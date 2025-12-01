@@ -3,7 +3,7 @@
 const form = document.querySelector("[data-form]");
 const formInputs = document.querySelectorAll("[data-form-input]");
 const formBtn = document.querySelector("[data-form-btn]");
-const formFeedback = document.getElementById('form-feedback'); // Get the feedback container
+const formFeedback = document.getElementById('form-feedback');
 
 // Function to display an error message for a given input
 const displayError = (input, message) => {
@@ -29,40 +29,42 @@ const clearError = (input) => {
 
 // Function to display general form feedback (success/error)
 const displayFormFeedback = (message, type) => {
+  if (!formFeedback) return;
   formFeedback.textContent = message;
-  formFeedback.className = 'form-feedback'; // Reset classes
+  formFeedback.className = 'form-feedback';
   formFeedback.classList.add(type === 'success' ? 'success-message' : 'error-message');
-  formFeedback.style.display = 'block'; // Show the feedback container
+  formFeedback.style.display = 'block';
 
   // Optionally hide after a few seconds
   setTimeout(() => {
+    if (!formFeedback) return;
     formFeedback.style.display = 'none';
     formFeedback.textContent = '';
   }, 5000);
 };
 
 for (let i = 0; i < formInputs.length; i++) {
+  let debounceTimer = null;
   formInputs[i].addEventListener("input", function () {
     if (!form || !formBtn) return;
-
-    if (this.checkValidity()) {
-      clearError(this);
-      this.classList.add('is-valid'); // Add is-valid class on valid input
-    } else {
-      this.classList.remove('is-valid'); // Remove is-valid if invalid
-      // Only display error on input if it's already been marked invalid by a 'blur' or 'invalid' event
-      // or if it's a required field that's empty.
-      if (this.value.trim() !== '' || this.required) {
-        displayError(this, this.validationMessage);
+    if (debounceTimer) clearTimeout(debounceTimer);
+    const inputEl = this;
+    debounceTimer = setTimeout(() => {
+      if (inputEl.checkValidity()) {
+        clearError(inputEl);
+        inputEl.classList.add('is-valid');
+      } else {
+        inputEl.classList.remove('is-valid');
+        if (inputEl.value.trim() !== '' || inputEl.required) {
+          displayError(inputEl, inputEl.validationMessage);
+        }
       }
-    }
-    
-    // Check overall form validity to enable/disable button
-    if (form.checkValidity()) {
-      formBtn.removeAttribute("disabled");
-    } else {
-      formBtn.setAttribute("disabled", "");
-    }
+      if (form.checkValidity()) {
+        formBtn.removeAttribute("disabled");
+      } else {
+        formBtn.setAttribute("disabled", "");
+      }
+    }, 150);
   });
 
   formInputs[i].addEventListener("invalid", function (event) {
@@ -70,9 +72,7 @@ for (let i = 0; i < formInputs.length; i++) {
     displayError(this, this.validationMessage);
     this.classList.remove('is-valid'); // Remove is-valid if invalid
     // Ensure button is disabled if form is invalid
-    if (!form.checkValidity()) {
-      formBtn.setAttribute("disabled", "");
-    }
+    formBtn.setAttribute("disabled", "");
   });
 
   formInputs[i].addEventListener("blur", function () {
@@ -89,9 +89,9 @@ for (let i = 0; i < formInputs.length; i++) {
 }
 
 // Handle form submission (AJAX)
-form.addEventListener('submit', async function (event) {
+if (form) form.addEventListener('submit', async function (event) {
   event.preventDefault(); // Prevent default form submission
-  formFeedback.style.display = 'none'; // Hide previous feedback
+  if (formFeedback) formFeedback.style.display = 'none';
 
   if (!form.checkValidity()) {
     // If form is invalid, trigger validation messages for all fields
@@ -112,16 +112,15 @@ form.addEventListener('submit', async function (event) {
   try {
     const response = await fetch(form.action, {
       method: form.method,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
+      // IMPORTANT: Do NOT set Content-Type header when sending FormData with files.
+      // The browser will automatically set the correct 'multipart/form-data' header.
+      body: formData, // Send the FormData object directly
     });
 
     const result = await response.json();
 
     if (response.ok) {
-      displayFormFeedback('Message sent successfully!', 'success');
+      displayFormFeedback('Your response has been shared and saved.', 'success');
       form.reset(); // Clear the form
       for (let i = 0; i < formInputs.length; i++) {
         clearError(formInputs[i]); // Clear any remaining error messages

@@ -85,6 +85,9 @@ module.exports.updateOptionsHandler = (req, res) => {
     if (action === 'delete') {
         return res.redirect(`/updating/${updates}/delete`);
     }
+    if (action === 'edit') {
+        return res.redirect(`/updating/${updates}/delete`);
+    }
     // If the action isn't recognized, something went wrong.
     res.status(400).send('We couldn\'t understand your request. Please try again.');
 };
@@ -402,6 +405,145 @@ module.exports.editClient = async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).render('error', { message: 'Failed to edit client.' });
+    }
+};
+
+// Renders the form to edit existing experience details, pre-filling with current data.
+module.exports.renderEditExperience = async (req, res) => {
+    try {
+        const data = await experience.findById(req.params.id);
+        res.render('inputs/updatingExperience', { action: 'edit', data });
+    } catch (err) {
+        console.error(err);
+        res.status(500).render('error', { message: 'Failed to render edit experience form.' });
+    }
+};
+
+// Processes the submission to update existing experience details.
+module.exports.editExperience = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { company, position, location, startDate, endDate, responsibilities } = req.body;
+        const respArray = (responsibilities || '')
+            .split('\n')
+            .map(s => s.trim())
+            .filter(Boolean);
+        await experience.findByIdAndUpdate(id, {
+            company,
+            position,
+            location,
+            startDate,
+            endDate,
+            responsibilities: respArray
+        });
+        res.redirect('/resume');
+    } catch (err) {
+        console.error(err);
+        res.status(500).render('error', { message: 'Failed to edit experience.' });
+    }
+};
+
+// Renders the form to edit existing skill details, pre-filling with current data.
+module.exports.renderEditSkill = async (req, res) => {
+    try {
+        const data = await skill.findById(req.params.id);
+        res.render('inputs/updatingSkills', { action: 'edit', data });
+    } catch (err) {
+        console.error(err);
+        res.status(500).render('error', { message: 'Failed to render edit skill form.' });
+    }
+};
+
+// Processes the submission to update existing skill details.
+module.exports.editSkill = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, tools } = req.body;
+        const toolsArray = (tools || '')
+            .split(',')
+            .map(t => t.trim())
+            .filter(Boolean);
+        await skill.findByIdAndUpdate(id, { name, tools: toolsArray });
+        res.redirect('/resume');
+    } catch (err) {
+        console.error(err);
+        res.status(500).render('error', { message: 'Failed to edit skill.' });
+    }
+};
+
+// Renders the form to edit an existing testimonial, pre-filling with current data.
+module.exports.renderEditTestimonial = async (req, res) => {
+    try {
+        const data = await testimonial.findById(req.params.id);
+        res.render('inputs/updatingTestimonials', { action: 'edit', data });
+    } catch (err) {
+        console.error(err);
+        res.status(500).render('error', { message: 'Failed to render edit testimonial form.' });
+    }
+};
+
+// Processes the submission to update an existing testimonial, handling new image uploads.
+module.exports.editTestimonial = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, position, testimonial: testimonialBody } = req.body;
+        const updatedTestimonial = await testimonial.findByIdAndUpdate(id, { name, position, testimonial: testimonialBody });
+        if (req.file) {
+            if (updatedTestimonial.image && updatedTestimonial.image.filename) {
+                await cloudinary.uploader.destroy(updatedTestimonial.image.filename);
+            }
+            const result = await new Promise((resolve, reject) => {
+                const uploadStream = cloudinary.uploader.upload_stream((error, result) => {
+                    if (error) reject(error);
+                    else resolve(result);
+                });
+                uploadStream.end(req.file.buffer);
+            });
+            updatedTestimonial.image = { url: result.secure_url, filename: result.public_id };
+            await updatedTestimonial.save();
+        }
+        res.redirect('/profile');
+    } catch (err) {
+        console.error(err);
+        res.status(500).render('error', { message: 'Failed to edit testimonial.' });
+    }
+};
+
+// Renders the form to edit an existing "What I Do" item, pre-filling with current data.
+module.exports.renderEditWhatDoIDo = async (req, res) => {
+    try {
+        const data = await whatDoIDo.findById(req.params.id);
+        res.render('inputs/updatingWhatdoIdo', { action: 'edit', data });
+    } catch (err) {
+        console.error(err);
+        res.status(500).render('error', { message: 'Failed to render edit "What I Do" form.' });
+    }
+};
+
+// Processes the submission to update an existing "What I Do" item, handling new icon uploads.
+module.exports.editWhatDoIDo = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, description } = req.body;
+        const updatedItem = await whatDoIDo.findByIdAndUpdate(id, { title, description });
+        if (req.file) {
+            if (updatedItem.icon && updatedItem.icon.filename) {
+                await cloudinary.uploader.destroy(updatedItem.icon.filename);
+            }
+            const result = await new Promise((resolve, reject) => {
+                const uploadStream = cloudinary.uploader.upload_stream((error, result) => {
+                    if (error) reject(error);
+                    else resolve(result);
+                });
+                uploadStream.end(req.file.buffer);
+            });
+            updatedItem.icon = { url: result.secure_url, filename: result.public_id };
+            await updatedItem.save();
+        }
+        res.redirect('/profile');
+    } catch (err) {
+        console.error(err);
+        res.status(500).render('error', { message: 'Failed to edit "What I Do" item.' });
     }
 };
 

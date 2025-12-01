@@ -20,6 +20,28 @@
             </button>
         </form>
     </section>
+    <% } else if (action === 'edit') { %>
+    <section class="contact-form">
+        <h3 class="h3 form-title">Edit Item</h3>
+        <form action="/updating/whatDoIDo/edit/<%= data._id %>?_method=PUT" method="POST" class="form" enctype="multipart/form-data">
+            <div class="input-wrapper">
+                <input type="text" name="title" class="form-input" value="<%= data.title %>" required>
+                <input type="file" name="icon" class="form-input">
+                <% if (data.icon && data.icon.url) { %>
+                    <p>Current Icon: <img src="<%= data.icon.url %>" alt="Current Icon" width="50"></p>
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="deleteIcon" name="deleteIcon" value="true">
+                        <label for="deleteIcon">Delete Current Icon</label>
+                    </div>
+                <% } %>
+            </div>
+            <textarea name="description" class="form-input" required><%= data.description %></textarea>
+            <button type="submit" class="form-btn" style="margin-top: 1rem;">
+                <ion-icon name="checkmark-outline"></ion-icon>
+                <span>Update Item</span>
+            </button>
+        </form>
+    </section>
     <% } else if (action === 'delete') { %>
     <section class="service">
         <h3 class="h3 service-title">Delete Item</h3>
@@ -28,17 +50,23 @@
             <% data.forEach(item => { %>
             <li class="service-item">
                 <div class="service-icon-box">
-                    <img src="<%= item.icon %>" alt="" width="40">
+                    <img src="<%= (item.icon && item.icon.url) ? item.icon.url : '' %>" alt="" width="40">
                 </div>
                 <div class="service-content-box">
                     <h4 class="h4 service-item-title"><%= item.title %></h4>
                     <p class="service-item-text"><%= item.description %></p>
-                    <form action="/updating/whatDoIDo/delete/<%= item._id %>?_method=DELETE" method="POST" style="margin-top: 1rem;">
-                        <button type="submit" class="form-btn" style="width: 100%;">
-                            <ion-icon name="trash-outline"></ion-icon>
-                            <span>Delete</span>
-                        </button>
-                    </form>
+                    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                        <a href="/updating/whatDoIDo/edit/<%= item._id %>" class="form-btn" style="flex: 1; text-align: center;">
+                            <ion-icon name="create-outline"></ion-icon>
+                            <span>Edit</span>
+                        </a>
+                        <form action="/updating/whatDoIDo/delete/<%= item._id %>?_method=DELETE" method="POST" style="flex: 1;">
+                            <button type="submit" class="form-btn" style="width: 100%;">
+                                <ion-icon name="trash-outline"></ion-icon>
+                                <span>Delete</span>
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </li>
             <% }); %>
