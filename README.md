@@ -9,6 +9,14 @@ A dynamic and interactive portfolio website built with Node.js, Express.js, and 
     *   **Resume:** Showcases education, work experience, and skills with progress indicators.
     *   **Portfolio:** Presents projects with dynamic category filtering.
     *   **Blog:** A dedicated page for blog content.
+*   **Resume Download Tracking:**
+    *   When a user downloads the resume, their location (latitude and longitude) is captured.
+    *   A notification is sent to a Telegram bot with a Google Maps link to the user's location.
+    *   The system has a triple-redundancy for geolocation to ensure high availability.
+*   **Two-Factor Authentication (2FA):**
+    *   A two-factor authentication system using a Telegram bot has been implemented for updating content and viewing contacts.
+    *   When a user tries to access the admin panel or view contacts, a 6-digit alphanumeric code is sent to a verification Telegram bot.
+    *   The user must enter the code to gain access.
 *   **Mobile Responsiveness Improvements:**
     *   Optimized navbar for mobile view: Icons-only navigation to save space, reduced height, and ensured fixed width to prevent overflow.
     *   Social media icons integrated into the mobile navbar for easy access.
@@ -18,7 +26,7 @@ A dynamic and interactive portfolio website built with Node.js, Express.js, and 
     *   Includes phone number validation and auto-formatting.
     *   **Telegram Notifications:** Receive instant notifications on your Telegram app for new contact messages, including details and attachment links.
 *   **Admin Panel (Content Management System):**
-    *   Secure login for content administrators.
+    *   Secure login for content administrators with 2FA.
     *   Add, edit, and delete various data types:
         *   "What I Do" items (with icon uploads)
         *   Testimonials (with image uploads)
@@ -40,7 +48,7 @@ A dynamic and interactive portfolio website built with Node.js, Express.js, and 
     *   MongoDB (via Mongoose ODM)
     *   Cloudinary (Image storage for profile content)
     *   Supabase (File storage for contact attachments)
-    *   `node-telegram-bot-api` (for contact notifications)
+    *   `axios` (for making HTTP requests to geolocation and Telegram APIs)
     *   `dotenv` (Environment variable management)
     *   `express-session` (Session management)
     *   `multer` (Multipart form data handling for file uploads)
@@ -60,7 +68,7 @@ A dynamic and interactive portfolio website built with Node.js, Express.js, and 
 *   MongoDB instance (local or cloud-hosted like MongoDB Atlas)
 *   Cloudinary account (for image uploads in admin panel)
 *   Supabase project (for file uploads in contact form)
-*   Telegram Bot and your Chat ID (for contact notifications)
+*   Two Telegram Bots and your Chat ID (one for contact notifications, one for 2FA)
 
 ### 1. Clone the repository
 
@@ -97,8 +105,11 @@ db_password=your_mongodb_password # if included in MONGODB_URI, might not be nee
 secretkey=a_strong_secret_for_admin_panel # Used for admin panel login
 CONTACT_SECRET_KEY=a_strong_secret_for_contact_view # Used for viewing contacts
 
-TELEGRAM_BOT_TOKEN=your_telegram_bot_token
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token_for_contact_notifications
+VERIFICATION_TELEGRAM_BOT_TOKEN=your_telegram_bot_token_for_2fa
 TELEGRAM_CHAT_ID=your_telegram_chat_id
+
+resume_url=your_resume_download_url
 
 # Optional: Set to 'true' to skip MongoDB connection during development/testing
 # SKIP_DB=true
@@ -132,9 +143,10 @@ The application will be accessible at `http://localhost:8080` (or your specified
 ### Admin Panel
 
 1.  Go to `/updating`.
-2.  Enter the `secretkey` defined in your `.env` file to access the admin options.
-3.  From the `/updating/updatings` page, you can choose to add, edit, or delete various data types.
-4.  To view contact messages, go to `/verify-contacts` and enter the `CONTACT_SECRET_KEY`.
+2.  A verification code will be sent to your verification Telegram bot.
+3.  Enter the code to access the admin options.
+4.  From the `/updating/updatings` page, you can choose to add, edit, or delete various data types.
+5.  To view contact messages, go to `/verify-contacts`. A verification code will be sent to your Telegram bot. Enter the code to view the contacts.
 
 ## API Endpoints
 
@@ -149,17 +161,17 @@ The application will be accessible at `http://localhost:8080` (or your specified
 *   `POST /contact`: Submits a new contact message, handles file uploads, saves to DB, and sends Telegram notification.
 *   `GET /error`: Renders a generic error page.
 
-### Admin/Protected Routes (require `secretkey` or `CONTACT_SECRET_KEY` for access)
+### Admin/Protected Routes (require 2FA for access)
 
 *   **Admin Login:**
-    *   `GET /updating`: Render admin login.
-    *   `POST /updating`: Authenticate admin.
+    *   `GET /updating`: Sends a verification code to the verification Telegram bot and renders the verification page.
+    *   `POST /updating/verify`: Verifies the 2FA code and grants access to the admin panel.
     *   `GET /updating/updatings`: Admin options dashboard.
     *   `POST /updating/updatings`: Handle add/delete actions.
     *   `POST /updating/logout`: Logout from admin.
 *   **Contact Management:**
-    *   `GET /verify-contacts`: Render contact view verification.
-    *   `POST /verify-contacts`: Verify access to contacts.
+    *   `GET /verify-contacts`: Sends a verification code to the verification Telegram bot and renders the verification page.
+    *   `POST /verify-contacts/check`: Verifies the 2FA code and grants access to the contacts.
     *   `GET /view-contacts`: View all contacts.
     *   `GET /contacts/:id`: View single contact.
     *   `DELETE /contacts/:id`: Delete a contact.
