@@ -2,6 +2,7 @@ require('dotenv').config();
 try {
     const express = require('express');
     const app = express();
+    app.set('trust proxy', true);
     const mongoose = require('mongoose');
     const path = require('path');
     const ejsMate = require('ejs-mate');

@@ -106,19 +106,25 @@ module.exports.downloadResume = async (req, res) => {
         const resumeUrl = process.env.resume_url;
         const clientProto = resumeUrl.startsWith('https') ? https : http;
 
-        // Get user's IP address
-        const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        const forwarded = (req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.headers['cf-connecting-ip'] || req.headers['fastly-client-ip'] || req.headers['true-client-ip'] || '').toString();
+        let ip = forwarded.split(',')[0].trim() || req.socket.remoteAddress || req.connection.remoteAddress;
+        if (ip && ip.startsWith('::ffff:')) ip = ip.substring(7);
+        console.log('User IP:', ip);
 
         // Get location from IP address
         try {
             let message;
             if (!ip) {
                 message = 'Could not determine IP address.';
+                console.log('IP address not found.');
             } else if (ip === '::1' || ip === '127.0.0.1') {
                 message = 'Someone from a local address downloaded your resume.';
+                console.log('Local address detected.');
             } else {
                 try {
+                    console.log('Trying ip-api.com...');
                     const locationResponse = await axios.get(`http://ip-api.com/json/${ip}`);
+                    console.log('ip-api.com response:', locationResponse.data);
                     const location = locationResponse.data;
                     if (location.status === 'success') {
                         const mapUrl = `https://www.google.com/maps?q=${location.lat},${location.lon}`;
@@ -127,32 +133,44 @@ module.exports.downloadResume = async (req, res) => {
                         throw new Error('ip-api.com failed');
                     }
                 } catch (error) {
+                    console.error('ip-api.com error:', error.message);
                     try {
+                        console.log('Trying ipapi.co...');
                         const locationResponse = await axios.get(`https://ipapi.co/${ip}/json/`);
+                        console.log('ipapi.co response:', locationResponse.data);
                         const location = locationResponse.data;
                         const mapUrl = `https://www.google.com/maps?q=${location.latitude},${location.longitude}`;
                         message = `Someone downloaded your resume. Location: ${mapUrl}`;
                     } catch (error) {
+                        console.error('ipapi.co error:', error.message);
                         try {
+                            console.log('Trying freegeoip.app...');
                             const locationResponse = await axios.get(`https://freegeoip.app/json/${ip}`);
+                            console.log('freegeoip.app response:', locationResponse.data);
                             const location = locationResponse.data;
                             const mapUrl = `https://www.google.com/maps?q=${location.latitude},${location.longitude}`;
                             message = `Someone downloaded your resume. Location: ${mapUrl}`;
                         } catch (error) {
+                            console.error('freegeoip.app error:', error.message);
                             message = 'Someone from an unknown location downloaded your resume.';
                         }
                     }
                 }
             }
 
-            // Send notification to Telegram
             const botToken = process.env.TELEGRAM_BOT_TOKEN;
             const chatId = process.env.TELEGRAM_CHAT_ID;
-            if (botToken && chatId) {
-                await axios.post(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-                    chat_id: chatId,
-                    text: message,
-                });
+            if (botToken && chatId && message) {
+                try {
+                    await axios.post(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                        chat_id: chatId,
+                        text: message,
+                    });
+                } catch (e) {
+                    console.error('Failed to send Telegram message:', e.message);
+                }
+            } else {
+                console.log('Telegram message:', message);
             }
         } catch (error) {
             console.error('Error getting location or sending Telegram message:', error);
