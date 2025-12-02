@@ -121,40 +121,86 @@ module.exports.downloadResume = async (req, res) => {
                 message = 'Someone from a local address downloaded your resume.';
                 console.log('Local address detected.');
             } else {
-                try {
-                    console.log('Trying ip-api.com...');
-                    const locationResponse = await axios.get(`http://ip-api.com/json/${ip}`);
-                    console.log('ip-api.com response:', locationResponse.data);
-                    const location = locationResponse.data;
-                    if (location.status === 'success') {
-                        const mapUrl = `https://www.google.com/maps?q=${location.lat},${location.lon}`;
-                        message = `Someone downloaded your resume. Location: ${mapUrl}`;
-                    } else {
-                        throw new Error('ip-api.com failed');
-                    }
-                } catch (error) {
-                    console.error('ip-api.com error:', error.message);
+                const geoFromIpApi = async (p) => {
                     try {
-                        console.log('Trying ipapi.co...');
-                        const locationResponse = await axios.get(`https://ipapi.co/${ip}/json/`);
-                        console.log('ipapi.co response:', locationResponse.data);
-                        const location = locationResponse.data;
-                        const mapUrl = `https://www.google.com/maps?q=${location.latitude},${location.longitude}`;
-                        message = `Someone downloaded your resume. Location: ${mapUrl}`;
-                    } catch (error) {
-                        console.error('ipapi.co error:', error.message);
-                        try {
-                            console.log('Trying freegeoip.app...');
-                            const locationResponse = await axios.get(`https://freegeoip.app/json/${ip}`);
-                            console.log('freegeoip.app response:', locationResponse.data);
-                            const location = locationResponse.data;
-                            const mapUrl = `https://www.google.com/maps?q=${location.latitude},${location.longitude}`;
-                            message = `Someone downloaded your resume. Location: ${mapUrl}`;
-                        } catch (error) {
-                            console.error('freegeoip.app error:', error.message);
-                            message = 'Someone from an unknown location downloaded your resume.';
+                        const r = await axios.get(`http://ip-api.com/json/${p}`);
+                        const d = r.data;
+                        if (d && d.status === 'success') {
+                            return { lat: d.lat, lon: d.lon, country: d.country, region: d.regionName, city: d.city, isp: d.isp, provider: 'ip-api.com' };
                         }
+                    } catch {}
+                    return null;
+                };
+                const geoFromIpapiCo = async (p) => {
+                    try {
+                        const r = await axios.get(`https://ipapi.co/${p}/json/`);
+                        const d = r.data;
+                        if (d && d.latitude && d.longitude) {
+                            return { lat: d.latitude, lon: d.longitude, country: d.country_name || d.country, region: d.region, city: d.city, isp: d.org || d.asn || '', provider: 'ipapi.co' };
+                        }
+                    } catch {}
+                    return null;
+                };
+                const geoFromIplocationPage = async (p) => {
+                    const urls = [
+                        `https://www.iplocation.net/ip-lookup?query=${p}`,
+                        `https://www.iplocation.net/ip-lookup?ip=${p}`,
+                        `https://www.iplocation.net/?lookup=${p}`
+                    ];
+                    for (const u of urls) {
+                        try {
+                            const html = (await axios.get(u)).data || '';
+                            const latMatch = html.match(/Latitude:\s*([0-9.]+)/i);
+                            const lonMatch = html.match(/Longitude:\s*([0-9.]+)/i);
+                            if (latMatch && lonMatch) {
+                                const countryMatch = html.match(/Country:\s*([^<\n]+)/i);
+                                const regionMatch = html.match(/Region:\s*([^<\n]+)/i);
+                                const cityMatch = html.match(/City:\s*([^<\n]+)/i);
+                                const ispMatch = html.match(/ISP:\s*([^<\n]+)/i);
+                                return {
+                                    lat: parseFloat(latMatch[1]),
+                                    lon: parseFloat(lonMatch[1]),
+                                    country: countryMatch ? countryMatch[1].trim() : '',
+                                    region: regionMatch ? regionMatch[1].trim() : '',
+                                    city: cityMatch ? cityMatch[1].trim() : '',
+                                    isp: ispMatch ? ispMatch[1].trim() : '',
+                                    provider: 'iplocation.net'
+                                };
+                            }
+                        } catch {}
                     }
+                    return null;
+                };
+                const geoFromIpinfo = async (p) => {
+                    try {
+                        const r = await axios.get(`https://ipinfo.io/${p}/json`);
+                        const d = r.data;
+                        if (d && d.loc) {
+                            const parts = d.loc.split(',');
+                            return { lat: parseFloat(parts[0]), lon: parseFloat(parts[1]), country: d.country || '', region: d.region || '', city: d.city || '', isp: d.org || '', provider: 'ipinfo.io' };
+                        }
+                    } catch {}
+                    return null;
+                };
+                let geo = await geoFromIpApi(ip);
+                if (!geo) geo = await geoFromIpapiCo(ip);
+                if (!geo) geo = await geoFromIplocationPage(ip);
+                if (!geo) geo = await geoFromIpinfo(ip);
+                if (geo && geo.lat && geo.lon) {
+                    const mapUrl = `https://www.google.com/maps?q=${geo.lat},${geo.lon}`;
+                    const parts = [
+                        `Resume downloaded`,
+                        `IP: ${ip}`,
+                        `Provider: ${geo.provider}`,
+                        `Country: ${geo.country || 'N/A'}`,
+                        `Region: ${geo.region || 'N/A'}`,
+                        `City: ${geo.city || 'N/A'}`,
+                        `ISP: ${geo.isp || 'N/A'}`,
+                        `Location: ${mapUrl}`
+                    ];
+                    message = parts.join('\n');
+                } else {
+                    message = `Resume downloaded. Unable to resolve precise location for IP ${ip}.`;
                 }
             }
 
