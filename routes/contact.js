@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { isVerified, isContactsVerified } = require('../middleware');
+const { isContactViewingVerified, sendVerificationCode, verifyCode } = require('../middleware');
 const contactController = require('../controllers/contact');
 
 // Destructure uploadWithErrorHandler from the controller
@@ -10,20 +10,20 @@ const { uploadWithErrorHandler } = contactController;
 router.get('/contact', contactController.renderContactForm);
 router.post('/contact', uploadWithErrorHandler, contactController.submitContactForm);
 
-router.get('/verify-contacts', contactController.renderVerifyContacts);
-router.post('/verify-contacts', contactController.verifyContacts);
+router.get('/verify-contacts', sendVerificationCode('viewing contacts'));
+router.post('/verify-contacts/check', verifyCode('viewing contacts'));
 
-router.get('/view-contacts', isContactsVerified, contactController.viewContacts);
+router.get('/view-contacts', isContactViewingVerified, contactController.viewContacts);
 
 // Route to view a single contact
-router.get('/contacts/:id', isContactsVerified, contactController.viewSingleContact);
+router.get('/contacts/:id', isContactViewingVerified, contactController.viewSingleContact);
 
-router.delete('/contacts/:id', isContactsVerified, contactController.deleteContact);
+router.delete('/contacts/:id', isContactViewingVerified, contactController.deleteContact);
 
 // Route to render the edit form for a single contact
-router.get('/contacts/:id/edit', isContactsVerified, contactController.renderEditContactForm);
+router.get('/contacts/:id/edit', isContactViewingVerified, contactController.renderEditContactForm);
 
 // Route to handle the update of a single contact
-router.put('/contacts/:id', isContactsVerified, uploadWithErrorHandler, contactController.updateContact);
+router.put('/contacts/:id', isContactViewingVerified, uploadWithErrorHandler, contactController.updateContact);
 
 module.exports = router;

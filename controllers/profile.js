@@ -1,3 +1,5 @@
+const axios = require('axios');
+require('dotenv').config();
 // This file contains all the logic for rendering the main profile-related pages.
 // It fetches necessary data from our database models and prepares it for display.
 
@@ -99,34 +101,78 @@ module.exports.renderBlog = (req, res) => {
     }
 };
 
-module.exports.downloadResume = (req, res) => {
+module.exports.downloadResume = async (req, res) => {
     try {
-        const defaultPath = path.join(__dirname, '../public/assets/resume.pdf');
-        const configuredPath = process.env.RESUME_FILE ? path.resolve(process.env.RESUME_FILE) : defaultPath;
-        if (fs.existsSync(configuredPath)) {
-            return res.download(configuredPath, 'Adityapratap_Singh_Resume.pdf');
-        }
-        const resumeUrl = process.env.RESUME_URL;
-        if (resumeUrl) {
-            const clientProto = resumeUrl.startsWith('https') ? https : http;
-            res.setHeader('Content-Disposition', 'attachment; filename="Adityapratap_Singh_Resume.pdf"');
-            clientProto.get(resumeUrl, (fileRes) => {
-                if (fileRes.statusCode >= 400) {
-                    return res.status(502).render('error', { message: 'Failed to fetch resume file.' });
+        const resumeUrl = process.env.resume_url;
+        const clientProto = resumeUrl.startsWith('https') ? https : http;
+
+        // Get user's IP address
+        const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+        // Get location from IP address
+        try {
+            let message;
+            if (!ip) {
+                message = 'Could not determine IP address.';
+            } else if (ip === '::1' || ip === '127.0.0.1') {
+                message = 'Someone from a local address downloaded your resume.';
+            } else {
+                try {
+                    const locationResponse = await axios.get(`http://ip-api.com/json/${ip}`);
+                    const location = locationResponse.data;
+                    if (location.status === 'success') {
+                        const mapUrl = `https://www.google.com/maps?q=${location.lat},${location.lon}`;
+                        message = `Someone downloaded your resume. Location: ${mapUrl}`;
+                    } else {
+                        throw new Error('ip-api.com failed');
+                    }
+                } catch (error) {
+                    try {
+                        const locationResponse = await axios.get(`https://ipapi.co/${ip}/json/`);
+                        const location = locationResponse.data;
+                        const mapUrl = `https://www.google.com/maps?q=${location.latitude},${location.longitude}`;
+                        message = `Someone downloaded your resume. Location: ${mapUrl}`;
+                    } catch (error) {
+                        try {
+                            const locationResponse = await axios.get(`https://freegeoip.app/json/${ip}`);
+                            const location = locationResponse.data;
+                            const mapUrl = `https://www.google.com/maps?q=${location.latitude},${location.longitude}`;
+                            message = `Someone downloaded your resume. Location: ${mapUrl}`;
+                        } catch (error) {
+                            message = 'Someone from an unknown location downloaded your resume.';
+                        }
+                    }
                 }
-                if (fileRes.headers['content-type']) {
-                    res.setHeader('Content-Type', fileRes.headers['content-type']);
-                } else {
-                    res.setHeader('Content-Type', 'application/pdf');
-                }
-                fileRes.pipe(res);
-            }).on('error', (err) => {
-                console.error(err);
-                res.status(500).render('error', { message: 'Failed to download resume.' });
-            });
-            return;
+            }
+
+            // Send notification to Telegram
+            const botToken = process.env.TELEGRAM_BOT_TOKEN;
+            const chatId = process.env.TELEGRAM_CHAT_ID;
+            if (botToken && chatId) {
+                await axios.post(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                    chat_id: chatId,
+                    text: message,
+                });
+            }
+        } catch (error) {
+            console.error('Error getting location or sending Telegram message:', error);
         }
-        res.status(404).render('error', { message: 'Resume file not configured.' });
+
+        res.setHeader('Content-Disposition', 'attachment; filename="Adityapratap_Singh_Resume.pdf"');
+        clientProto.get(resumeUrl, (fileRes) => {
+            if (fileRes.statusCode >= 400) {
+                return res.status(502).render('error', { message: 'Failed to fetch resume file.' });
+            }
+            if (fileRes.headers['content-type']) {
+                res.setHeader('Content-Type', fileRes.headers['content-type']);
+            } else {
+                res.setHeader('Content-Type', 'application/pdf');
+            }
+            fileRes.pipe(res);
+        }).on('error', (err) => {
+            console.error(err);
+            res.status(500).render('error', { message: 'Failed to download resume.' });
+        });
     } catch (err) {
         console.error(err);
         res.status(500).render('error', { message: 'Failed to download resume.' });
