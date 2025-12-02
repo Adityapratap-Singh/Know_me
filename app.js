@@ -8,6 +8,7 @@ try {
     const ejsMate = require('ejs-mate');
     const methodOverride = require('method-override');
     const session = require('express-session');
+    const MongoStore = require('connect-mongo');
 
     // EJS + Views
     app.engine('ejs', ejsMate);
@@ -19,16 +20,28 @@ try {
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
     app.use(methodOverride('_method'));
-    app.use(session({
+
+    const skipDb = process.env.SKIP_DB === 'true';
+    const dbUsername = process.env.db_username;
+    const dbPassword = process.env.db_password;
+    const dbUriTemplate = process.env.MONGODB_URI;
+    const dbUrl = dbUriTemplate ? dbUriTemplate.replace('<db_username>', dbUsername).replace('<db_password>', dbPassword) : '';
+
+    const sessionOptions = {
         secret: process.env.SESSION_SECRET || 'a very long and random secret',
         resave: false,
-        saveUninitialized: true,
+        saveUninitialized: false,
         cookie: {
             httpOnly: true,
-            expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
             maxAge: 1000 * 60 * 60 * 24 * 7
         }
-    }));
+    };
+    if (!skipDb && dbUrl) {
+        sessionOptions.store = MongoStore.create({ mongoUrl: dbUrl, ttl: 60 * 60 * 24 * 7 });
+    }
+    app.use(session(sessionOptions));
 
     const { storage, cloudinary } = require('./cloudinary');
     const multer = require('multer');
@@ -44,12 +57,7 @@ try {
     const contact = require('./models/contact');
     const collection = require('./models/collection');
 
-    const skipDb = process.env.SKIP_DB === 'true';
     if (!skipDb) {
-        const dbUsername = process.env.db_username;
-        const dbPassword = process.env.db_password;
-        const dbUriTemplate = process.env.MONGODB_URI;
-        const dbUrl = dbUriTemplate ? dbUriTemplate.replace('<db_username>', dbUsername).replace('<db_password>', dbPassword) : '';
         mongoose.set('bufferCommands', false);
         mongoose.connect(dbUrl, {
             serverSelectionTimeoutMS: 8000,
