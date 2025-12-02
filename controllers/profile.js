@@ -115,10 +115,10 @@ module.exports.downloadResume = async (req, res) => {
         try {
             let message;
             if (!ip) {
-                message = 'Could not determine IP address.';
+                message = 'Could not determine IP address.\nIP: N/A';
                 console.log('IP address not found.');
             } else if (ip === '::1' || ip === '127.0.0.1') {
-                message = 'Someone from a local address downloaded your resume.';
+                message = `Someone from a local address downloaded your resume.\nIP: ${ip}`;
                 console.log('Local address detected.');
             } else {
                 const geoFromIpgeolocation = async (p) => {
@@ -202,7 +202,6 @@ module.exports.downloadResume = async (req, res) => {
                 if (!geo) geo = await geoFromIplocationPage(ip);
                 if (!geo) geo = await geoFromIpinfo(ip);
                 if (geo && geo.lat && geo.lon) {
-                    const mapUrl = `https://www.google.com/maps?q=${geo.lat},${geo.lon}`;
                     const parts = [
                         `Resume downloaded`,
                         `IP: ${ip}`,
@@ -211,7 +210,8 @@ module.exports.downloadResume = async (req, res) => {
                         `Region: ${geo.region || 'N/A'}`,
                         `City: ${geo.city || 'N/A'}`,
                         `ISP: ${geo.isp || 'N/A'}`,
-                        `Location: ${mapUrl}`
+                        `Latitude: ${geo.lat}`,
+                        `Longitude: ${geo.lon}`
                     ];
                     message = parts.join('\n');
                 } else {
