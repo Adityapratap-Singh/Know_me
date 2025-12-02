@@ -121,6 +121,20 @@ module.exports.downloadResume = async (req, res) => {
                 message = 'Someone from a local address downloaded your resume.';
                 console.log('Local address detected.');
             } else {
+                const geoFromIpgeolocation = async (p) => {
+                    const key = process.env.ipgeolocation;
+                    if (!key) return null;
+                    try {
+                        const r = await axios.get(`https://api.ipgeolocation.io/ipgeo?apiKey=${key}&ip=${p}`);
+                        const d = r.data;
+                        const lat = d && (d.latitude ? parseFloat(d.latitude) : (d.location && d.location.latitude ? parseFloat(d.location.latitude) : null));
+                        const lon = d && (d.longitude ? parseFloat(d.longitude) : (d.location && d.location.longitude ? parseFloat(d.location.longitude) : null));
+                        if (lat !== null && lon !== null) {
+                            return { lat, lon, country: d.country_name || d.country || '', region: d.state_prov || d.state || '', city: d.city || '', isp: d.isp || d.organization || '', provider: 'ipgeolocation.io' };
+                        }
+                    } catch {}
+                    return null;
+                };
                 const geoFromIpApi = async (p) => {
                     try {
                         const r = await axios.get(`http://ip-api.com/json/${p}`);
@@ -182,7 +196,8 @@ module.exports.downloadResume = async (req, res) => {
                     } catch {}
                     return null;
                 };
-                let geo = await geoFromIpApi(ip);
+                let geo = await geoFromIpgeolocation(ip);
+                if (!geo) geo = await geoFromIpApi(ip);
                 if (!geo) geo = await geoFromIpapiCo(ip);
                 if (!geo) geo = await geoFromIplocationPage(ip);
                 if (!geo) geo = await geoFromIpinfo(ip);
