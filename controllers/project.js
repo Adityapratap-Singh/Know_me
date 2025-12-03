@@ -24,10 +24,12 @@ module.exports.renderAddProjectForm = (req, res) => {
 
 module.exports.addProject = async (req, res) => {
     try {
-        const { technologies, ...rest } = req.body;
+        const { technologies, strengths, isVisible, ...rest } = req.body;
         const newProject = new Project({
             ...rest,
-            technologies: technologies.split(',').map(t => t.trim()).filter(t => t.length > 0)
+            technologies: (technologies || '').split(',').map(t => t.trim()).filter(t => t.length > 0),
+            strengths: (strengths || '').split(',').map(s => s.trim()).filter(s => s.length > 0),
+            isVisible: typeof isVisible !== 'undefined' ? (isVisible === 'true' || isVisible === 'on') : true
         });
 
         if (req.file) {
@@ -76,13 +78,15 @@ module.exports.renderEditProjectForm = async (req, res) => {
 module.exports.updateProject = async (req, res) => {
     try {
         const { id } = req.params;
-        const { technologies, ...rest } = req.body;
+        const { technologies, strengths, isVisible, ...rest } = req.body;
 
         const updatedProject = await Project.findByIdAndUpdate(
             id,
             {
                 ...rest,
-                technologies: technologies.split(',').map(t => t.trim()).filter(t => t.length > 0)
+                technologies: (technologies || '').split(',').map(t => t.trim()).filter(t => t.length > 0),
+                strengths: (strengths || '').split(',').map(s => s.trim()).filter(s => s.length > 0),
+                isVisible: typeof isVisible !== 'undefined' ? (isVisible === 'true' || isVisible === 'on') : false
             },
             { new: true, runValidators: true }
         );

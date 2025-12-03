@@ -35,6 +35,15 @@ const projectsSchema = new Schema({
             },
             message: 'At least one technology is required.'
         }
+    },
+    strengths: { type: [String], default: [] },
+    context: { type: String, trim: true },
+    role: { type: String, trim: true },
+    approach: { type: String, trim: true },
+    outcome: { type: String, trim: true },
+    isVisible: {
+        type: Boolean,
+        default: true
     }
 });
 

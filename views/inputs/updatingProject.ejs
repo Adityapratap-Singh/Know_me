@@ -1,6 +1,6 @@
 <% layout('layouts/boilerPlate') %>
 
-<article class="contact active" data-page="update-project">
+<article class="contact active" data-page="update-project" style="overflow-x: hidden;">
     <header>
         <h2 class="h2 article-title">Update Projects</h2>
     </header>
@@ -17,8 +17,19 @@
                 <input type="url" name="link" class="form-input" placeholder="Link">
                 <input type="file" name="image" class="form-input">
             </div>
-            <textarea name="description" class="form-input" placeholder="Description" required></textarea>
+            <textarea name="description" class="form-input" placeholder="Project summary (optional if using sections)"></textarea>
+            <div class="input-wrapper">
+                <input type="text" name="context" class="form-input" placeholder="Context (problem/opportunity)">
+                <input type="text" name="role" class="form-input" placeholder="Role (scope/responsibilities)">
+            </div>
+            <textarea name="approach" class="form-input" placeholder="Approach (key decisions, trade-offs)"></textarea>
+            <textarea name="outcome" class="form-input" placeholder="Outcome (impact, metrics)"></textarea>
             <input type="text" name="technologies" class="form-input" placeholder="Technologies (comma-separated)" required>
+            <input type="text" name="strengths" class="form-input" placeholder="Strengths (comma-separated, e.g., Front-end, Full-stack, UI/UX)">
+            <div class="checkbox-wrapper" style="margin-top: .5rem;">
+                <input type="checkbox" id="isVisibleAdd" name="isVisible" checked>
+                <label for="isVisibleAdd">Show this project on the Portfolio</label>
+            </div>
             <button type="submit" class="form-btn" style="margin-top: 1rem;">
                 <ion-icon name="add-outline"></ion-icon>
                 <span>Add Project</span>
@@ -36,16 +47,29 @@
             <div class="input-wrapper">
                 <input type="url" name="link" class="form-input" value="<%= data.link %>">
                 <input type="file" name="image" class="form-input">
-                <% if (data.image && data.image.url) { %>
-                    <p>Current Image: <a href="<%= data.image.url %>" target="_blank"><%= data.image.filename %></a></p>
-                    <div class="checkbox-wrapper">
-                        <input type="checkbox" id="deleteImage" name="deleteImage" value="true">
-                        <label for="deleteImage">Delete Current Image</label>
-                    </div>
-                <% } %>
             </div>
-            <textarea name="description" class="form-input" required><%= data.description %></textarea>
+            <% if (data.image && data.image.url) { %>
+            <div class="input-wrapper">
+                <p style="color: lightgray; margin: 0;">Current Image: <a href="<%= data.image.url %>" target="_blank"><%= data.image.filename %></a></p>
+                <div class="checkbox-wrapper" style="display: inline-flex; align-items: center; gap: .5rem; justify-content: flex-end; margin: 0;">
+                    <input type="checkbox" id="deleteImage" name="deleteImage" value="true" style="margin: 0;">
+                    <label for="deleteImage" style="color: lightgray; margin: 0; white-space: nowrap;">Delete Current Image</label>
+                </div>
+            </div>
+            <% } %>
+            <textarea name="description" class="form-input"><%= data.description %></textarea>
+            <div class="input-wrapper">
+                <input type="text" name="context" class="form-input" value="<%= data.context || '' %>" placeholder="Context (problem/opportunity)">
+                <input type="text" name="role" class="form-input" value="<%= data.role || '' %>" placeholder="Role (scope/responsibilities)">
+            </div>
+            <textarea name="approach" class="form-input" placeholder="Approach (key decisions, trade-offs)"><%= data.approach || '' %></textarea>
+            <textarea name="outcome" class="form-input" placeholder="Outcome (impact, metrics)"><%= data.outcome || '' %></textarea>
             <input type="text" name="technologies" class="form-input" value="<%= data.technologies.join(', ') %>" required>
+            <input type="text" name="strengths" class="form-input" value="<%= (Array.isArray(data.strengths) ? data.strengths.join(', ') : '') %>" placeholder="Strengths (comma-separated, e.g., Front-end, Full-stack, UI/UX)">
+            <div class="checkbox-wrapper" style="margin-top: .5rem; display: inline-flex; align-items: center; gap: .5rem;">
+                <input type="checkbox" id="isVisibleEdit" name="isVisible" <%= (typeof data.isVisible === 'undefined' || data.isVisible) ? 'checked' : '' %> >
+                <label for="isVisibleEdit" style="color: lightgray;">Show this project on the Portfolio</label>
+            </div>
             <button type="submit" class="form-btn" style="margin-top: 1rem;">
                 <ion-icon name="checkmark-outline"></ion-icon>
                 <span>Update Project</span>

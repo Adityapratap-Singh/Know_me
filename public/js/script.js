@@ -12,6 +12,7 @@ import './used/sidebar.js';
 import './used/testimonials.js';
 // Imports the logic for filtering portfolio items and managing the custom select dropdown.
 import './used/portfolio-filter.js';
+import './used/projects.js';
 // Imports the script that handles the contact form's interactive behavior.
 import './used/contact-form.js';
 // Imports the logic for expanding and viewing contact details.

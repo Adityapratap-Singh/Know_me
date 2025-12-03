@@ -78,8 +78,8 @@ module.exports.renderResume = async (req, res) => {
 // Renders the portfolio page, showcasing various projects.
 module.exports.renderPortfolio = async (req, res) => {
     try {
-        // Fetch all project entries.
-        const proj = await project.find();
+        // Fetch only visible project entries.
+        const proj = await project.find({ $or: [ { isVisible: true }, { isVisible: { $exists: false } } ] }).lean().catch(() => []);
         // Extract unique categories from the fetched projects
         const uniqueCategories = [...new Set(proj.map(p => p.category))];
         // Render the portfolio page with the fetched project data and unique categories.

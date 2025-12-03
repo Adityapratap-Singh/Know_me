@@ -5,6 +5,10 @@
 
   <header>
     <h2 class="h2 article-title">Portfolio</h2>
+    <a href="/contact" class="form-btn" style="margin-top:8px;">
+      <ion-icon name="chatbubbles-outline"></ion-icon>
+      <span>Contact Me</span>
+    </a>
   </header>
 
   <section class="projects">
@@ -43,19 +47,31 @@
     
     <%# List of projects %>
     <ul class="project-list">
-      <%# Loop through each project and display its details. %>
       <% projects.forEach(function(project) { %>
-      <li class="project-item  active" data-filter-item data-category="<%= project.category.toLowerCase() %>">
+      <li class="project-item active" data-filter-item data-category="<%= project.category.toLowerCase() %>" data-project-item>
         <a href="<%= project.link %>">
           <figure class="project-img">
             <div class="project-item-icon-box">
               <ion-icon name="eye-outline"></ion-icon>
             </div>
-            <img src="<%= project.image.url %>" alt="finance" loading="lazy">
+            <img src="<%= project.image.url %>" alt="<%= project.title %>" loading="lazy" decoding="async" sizes="(max-width: 700px) 100vw, (max-width: 1024px) 50vw, 33vw">
           </figure>
           <h3 class="project-title"><%= project.title %></h3>
           <p class="project-category"><%= project.category %></p>
         </a>
+        <div style="display:none;">
+          <div data-project-title><%= project.title %></div>
+          <div data-project-category><%= project.category %></div>
+          <div data-project-image><%= project.image && project.image.url ? project.image.url : '' %></div>
+          <div data-project-description><%= project.description %></div>
+          <div data-project-context><%= project.context || '' %></div>
+          <div data-project-role><%= project.role || '' %></div>
+          <div data-project-approach><%= project.approach || '' %></div>
+          <div data-project-outcome><%= project.outcome || '' %></div>
+          <div data-project-technologies><%= Array.isArray(project.technologies) ? project.technologies.join(', ') : '' %></div>
+          <div data-project-strengths><%= Array.isArray(project.strengths) ? project.strengths.join(', ') : '' %></div>
+          <div data-project-link><%= project.link %></div>
+        </div>
       </li>
       <% }); %>
     </ul>
