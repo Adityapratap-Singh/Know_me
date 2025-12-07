@@ -54,19 +54,18 @@ function buildModalFrom(item) {
   const techList = (tech && tech.textContent ? tech.textContent.split(',').map(s => s.trim()).filter(Boolean) : []);
   const strengthsList = (strengths && strengths.textContent ? strengths.textContent.split(',').map(s => s.trim()).filter(Boolean) : []);
   const chip = (label, tone) => `<li style=\"background:${tone};color:var(--white-2);padding:.3rem .6rem;border-radius:8px;font-size:.8rem;\">${label}</li>`;
-  const techHtml = techList.length ? `<div style="margin-top:.75rem"><strong>Tech:</strong><ul style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.25rem;">${techList.map(t => chip(t,'var(--jet)')).join('')}</ul></div>` : '';
+  const techHtml = techList.length ? `<div style="margin-top:.75rem"><strong>Tech Stack:</strong><ul style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.25rem;">${techList.map(t => chip(t,'var(--jet)')).join('')}</ul></div>` : '';
   const strengthsHtml = strengthsList.length ? `<div style="margin-top:.75rem"><strong>Strengths:</strong><ul style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.25rem;">${strengthsList.map(s => chip(s,'#2a2a2a')).join('')}</ul></div>` : '';
   const imgHtml = (image && image.textContent) ? `<div class="modal-avatar-box" style="width:100%;height:auto;border-radius:12px;overflow:hidden;margin-bottom:12px;"><img src="${image.textContent}" alt="${title ? title.textContent : ''}" style="width:100%;height:auto;object-fit:cover;"></div>` : '';
-  const visitHtml = (link && link.textContent) ? `<div style="margin-top:14px;display:flex;justify-content:flex-end;"><a href="${link.textContent}" target="_blank" rel="noopener" class="form-btn" style="background:var(--blue-ryb);padding:.6rem 1rem;border-radius:8px;">Visit Project</a></div>` : '';
+  const visitHtml = (link && link.textContent) ? `<div style="margin-top:14px;display:flex;justify-content:flex-end;"><a href="${link.textContent}" target="_blank" rel="noopener" class="form-btn" style="background:var(--blue-ryb);padding:.6rem 1rem;border-radius:8px;">View Project</a></div>` : '';
 
+  const typeHtml = (category && category.textContent) ? `<div style="margin-top:.5rem"><strong>Type:</strong> ${category.textContent}</div>` : '';
+  const descHtml = (description && description.textContent) ? `<div style="margin-top:.5rem"><strong>Description:</strong> ${description.textContent}</div>` : '';
   const contextHtml = (context && context.textContent) ? `<div style="margin-top:.5rem"><strong>Context:</strong> ${context.textContent}</div>` : '';
   const roleHtml = (role && role.textContent) ? `<div style="margin-top:.5rem"><strong>Role:</strong> ${role.textContent}</div>` : '';
   const approachHtml = (approach && approach.textContent) ? `<div style="margin-top:.5rem"><strong>Approach:</strong> ${approach.textContent}</div>` : '';
   const outcomeHtml = (outcome && outcome.textContent) ? `<div style="margin-top:.5rem"><strong>Outcome:</strong> ${outcome.textContent}</div>` : '';
-
-  const summaryHtml = (!contextHtml && !roleHtml && !approachHtml && !outcomeHtml && description && description.textContent)
-    ? `<div>${description.textContent}</div>`
-    : `${contextHtml}${roleHtml}${approachHtml}${outcomeHtml}`;
+  const summaryHtml = `${typeHtml}${descHtml}${contextHtml}${roleHtml}${approachHtml}${outcomeHtml}`;
 
   expandedModal.innerHTML = `
     <button class="expanded-close" aria-label="Close">&times;</button>
