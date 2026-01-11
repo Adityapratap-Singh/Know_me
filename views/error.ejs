@@ -1,34 +1,49 @@
 <% layout('layouts/boilerPlate') %>
 
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <div class="card text-center shadow-lg border-0 rounded-lg">
-                <div class="card-header bg-danger text-white py-3 rounded-top">
-                    <h3 class="card-title mb-0">Oops! Something Went Wrong</h3>
-                </div>
-                <div class="card-body p-5">
-                    <h4 class="text-danger mb-4">Error Details:</h4>
-                    <p class="card-text lead mb-4"><%= message %></p>
-                    
-                    <p class="text-muted mb-4">
-                        We apologize for the inconvenience. Please try the following:
-                    </p>
-                    <ul class="list-unstyled mb-4">
-                        <li><i class="fas fa-sync-alt me-2"></i> Try refreshing the page.</li>
-                        <li><i class="fas fa-home me-2"></i> Go back to the homepage.</li>
-                        <li><i class="fas fa-question-circle me-2"></i> If the problem persists, please contact support.</li>
-                    </ul>
-
-                    <div class="d-grid gap-2 col-6 mx-auto">
-                        <a href="/" class="btn btn-primary btn-lg">Go to Homepage</a>
-                        <a href="/contact" class="btn btn-outline-secondary btn-lg">Contact Support</a>
-                    </div>
-                </div>
-            </div>
+<article class="error active" data-page="error" style="min-height: 60vh; display: flex; align-items: center;">
+    <section style="width: 100%; max-width: 600px; margin: 0 auto; text-align: center;">
+        <h1 class="h1" style="font-size: 4rem; color: #ff6b6b; margin-bottom: 1rem;">⚠️</h1>
+        <h2 class="h2" style="margin-bottom: 1rem;">Oops! Something Went Wrong</h2>
+        
+        <div class="content-card" style="padding: 2rem; background: rgba(255, 107, 107, 0.1); border-left: 4px solid #ff6b6b; margin-bottom: 2rem;">
+            <p style="margin: 0; font-size: 1.1rem; color: #ccc; line-height: 1.6;">
+                <%= message %>
+            </p>
         </div>
-    </div>
-</div>
 
-<!-- Font Awesome for icons (assuming it's linked in boilerPlate.ejs or globally) -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <p style="color: #aaa; margin-bottom: 2rem;">
+            Don't worry! This is just a temporary issue. Try one of the following:
+        </p>
+
+        <ul style="list-style: none; padding: 0; margin-bottom: 2rem; color: #aaa; text-align: left; display: inline-block;">
+            <li style="padding: 0.75rem 0;">
+                <ion-icon name="refresh-outline" style="color: #667eea; margin-right: 0.5rem;"></ion-icon>
+                Refresh the page and try again
+            </li>
+            <li style="padding: 0.75rem 0;">
+                <ion-icon name="arrow-back-outline" style="color: #667eea; margin-right: 0.5rem;"></ion-icon>
+                Go back to the previous page
+            </li>
+            <li style="padding: 0.75rem 0;">
+                <ion-icon name="home-outline" style="color: #667eea; margin-right: 0.5rem;"></ion-icon>
+                Return to the homepage
+            </li>
+            <li style="padding: 0.75rem 0;">
+                <ion-icon name="chatbubbles-outline" style="color: #667eea; margin-right: 0.5rem;"></ion-icon>
+                Contact me if the issue persists
+            </li>
+        </ul>
+
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a href="/" class="form-btn" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                <ion-icon name="home-outline"></ion-icon>
+                <span>Go Home</span>
+            </a>
+            <a href="/contact" class="form-btn" style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(200, 200, 200, 0.1);">
+                <ion-icon name="mail-outline"></ion-icon>
+                <span>Contact Me</span>
+            </a>
+        </div>
+    </section>
+</article>
+

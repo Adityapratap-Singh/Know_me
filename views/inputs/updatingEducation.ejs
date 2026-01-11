@@ -72,7 +72,7 @@
                             <ion-icon name="create-outline"></ion-icon>
                             <span>Edit</span>
                         </a>
-                        <form action="/updating/education/delete/<%= item._id %>" method="POST" style="flex: 1;">
+                        <form action="/updating/education/delete/<%= item._id %>?_method=DELETE" method="POST" style="flex: 1;">
                             <button type="submit" class="form-btn" style="width: 100%;">
                                 <ion-icon name="trash-outline"></ion-icon>
                                 <span>Delete</span>

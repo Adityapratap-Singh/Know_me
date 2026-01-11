@@ -13,8 +13,8 @@
                 <h4 class="h4 timeline-item-title"><%= edu.institution %></h4>
 
                 <span>
-                    <%= new Date(edu.startDate).getFullYear() %> —
-                    <%= new Date(edu.endDate).getFullYear() %>
+                    <%= new Date(edu.startDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) %> —
+                    <%= new Date(edu.endDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) %>
                 </span>
 
                 <p class="timeline-text">
@@ -42,8 +42,8 @@
                     </span>
                 </h4>
                 <span>
-                    <%= new Date(exp.startDate).getFullYear() %> —
-                    <%= new Date(exp.endDate).getFullYear() %>
+                    <%= new Date(exp.startDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) %> —
+                    <%= new Date(exp.endDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) %>
                 </span>
                 <ol>
                     <% exp.responsibilities.forEach(function(resp) { %>
