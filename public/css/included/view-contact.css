@@ -41,7 +41,7 @@
 }
 
 .contact-details-card p strong {
-  color: var(--orange-yellow-crayola); /* Highlight labels */
+  color: var(--neon-cyan); /* Highlight labels */
   margin-right: 5px;
 }
 
@@ -71,7 +71,7 @@
 }
 
 .attachment-section .form-btn:hover {
-  background-color: var(--orange-yellow-crayola);
+  background-color: var(--neon-cyan);
 }
 
 .back-button-container {
@@ -94,7 +94,7 @@
 }
 
 .back-button-container .form-btn:hover {
-  background-color: var(--orange-yellow-crayola); /* Hover effect */
+  background-color: var(--neon-cyan); /* Hover effect */
 }
 
 .back-button-container form .form-btn {

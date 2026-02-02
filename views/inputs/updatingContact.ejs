@@ -4,6 +4,7 @@
     <header>
         <h2 class="h2 article-title">Update Contacts</h2>
     </header>
+    <%- include("../includes/admin-nav") %>
 
     <% if (action === 'add') { %>
     <section class="contact-form">
@@ -15,58 +16,75 @@
                 <input type="text" id="phone" name="phone" class="form-input" placeholder="Phone" required>
             </div>
             <textarea id="message" name="message" class="form-input" placeholder="Message" required></textarea>
-            <button type="submit" class="form-btn">
-                <ion-icon name="add-outline"></ion-icon>
-                <span>Add Contact</span>
-            </button>
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <button type="submit" name="save_action" value="save" class="form-btn" style="flex: 1;">
+                    <ion-icon name="add-outline"></ion-icon>
+                    <span>Save</span>
+                </button>
+                <button type="submit" name="save_action" value="save_and_add_another" class="form-btn" style="flex: 1; background: var(--bg-gradient-onyx); border: 1px solid var(--jet);">
+                    <ion-icon name="duplicate-outline"></ion-icon>
+                    <span>Save & Add Another</span>
+                </button>
+            </div>
         </form>
     </section>
     <% } else if (action === 'delete') { %>
     <section class="service">
         <h3 class="h3 service-title">Delete Contact</h3>
         <% if (data && data.length > 0) { %>
-        <ul class="service-list">
-            <% data.forEach(item => { %>
-            <li class="service-item">
-                <div class="service-content-box">
-                    <h4 class="h4 service-item-title"><%= item.name %></h4>
-                    <p class="service-item-text"><%= item.email %></p>
-                    <p class="service-item-text"><%= item.message %></p>
-                    <form action="/updating/contact/delete/<%= item._id %>?_method=DELETE" method="POST" style="margin-top: 1rem;">
-                        <button type="submit" class="form-btn" style="width: 100%;">
-                            <ion-icon name="trash-outline"></ion-icon>
-                            <span>Delete</span>
-                        </button>
-                    </form>
-                </div>
-            </li>
-            <% }); %>
-        </ul>
-        <% } else { %>
-        <h6 style="color: rgb(84, 84, 82);">No items found.</h6>
-        <% } %>
-    </section>
-    <% } else if (action === 'delete') { %>
-    <section class="service">
-        <h3 class="h3 service-title">Delete Contact</h3>
-        <% if (data && data.length > 0) { %>
-        <ul class="service-list">
-            <% data.forEach(item => { %>
-            <li class="service-item">
-                <div class="service-content-box">
-                    <h4 class="h4 service-item-title"><%= item.name %></h4>
-                    <p class="service-item-text"><%= item.email %></p>
-                    <p class="service-item-text"><%= item.message %></p>
-                    <form action="/updating/contact/delete/<%= item._id %>?_method=DELETE" method="POST" style="margin-top: 1rem;">
-                        <button type="submit" class="form-btn" style="width: 100%;">
-                            <ion-icon name="trash-outline"></ion-icon>
-                            <span>Delete</span>
-                        </button>
-                    </form>
-                </div>
-            </li>
-            <% }); %>
-        </ul>
+        <form action="/updating/contact/delete-batch" method="POST" id="batchDeleteForm">
+            <div style="margin-bottom: 1rem; display: flex; gap: 1rem;">
+                <button type="button" class="form-btn" id="selectAllBtn" style="flex: 1; background: var(--bg-gradient-onyx); border: 1px solid var(--jet);">
+                    <ion-icon name="checkbox-outline"></ion-icon>
+                    <span>Select All</span>
+                </button>
+                <button type="submit" class="form-btn" style="flex: 1;">
+                    <ion-icon name="trash-outline"></ion-icon>
+                    <span>Delete Selected</span>
+                </button>
+            </div>
+            <ul class="service-list">
+                <% data.forEach(item => { %>
+                <li class="service-item" style="display: flex; align-items: flex-start; gap: 15px; padding: 25px;">
+                    <div style="padding-top: 5px;">
+                        <input type="checkbox" name="ids[]" value="<%= item._id %>" style="width: 20px; height: 20px; cursor: pointer;">
+                    </div>
+                    <div class="service-icon-box" style="margin-bottom: 0; min-width: 40px; display: flex; justify-content: center;">
+                        <ion-icon name="person-circle-outline" style="font-size: 30px; color: var(--orange-yellow-crayola);"></ion-icon>
+                    </div>
+                    <div style="flex: 1;">
+                        <div class="service-content-box" style="text-align: left;">
+                            <h4 class="h4 service-item-title" style="margin-bottom: 5px;"><%= item.name %></h4>
+                            <p class="service-item-text" style="color: var(--light-gray); margin-bottom: 5px;">
+                                <a href="mailto:<%= item.email %>" style="color: var(--orange-yellow-crayola);"><%= item.email %></a>
+                            </p>
+                            <p class="service-item-text" style="font-size: var(--fs-8); color: var(--light-gray-70);">
+                                <%= item.message %>
+                            </p>
+                            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                                <a href="/contacts/<%= item._id %>/edit" class="form-btn" style="flex: 1; text-align: center;">
+                                    <ion-icon name="create-outline"></ion-icon>
+                                    <span>Edit</span>
+                                </a>
+                                <button type="button" onclick="if(confirm('Are you sure?')) { const form = document.createElement('form'); form.method = 'POST'; form.action = '/contacts/<%= item._id %>?_method=DELETE'; document.body.appendChild(form); form.submit(); }" class="form-btn" style="flex: 1; width: 100%;">
+                                    <ion-icon name="trash-outline"></ion-icon>
+                                    <span>Delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <% }); %>
+            </ul>
+        </form>
+        <script>
+            document.getElementById('selectAllBtn').addEventListener('click', function() {
+                const checkboxes = document.querySelectorAll('input[name="ids[]"]');
+                const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+                checkboxes.forEach(cb => cb.checked = !allChecked);
+                this.querySelector('span').textContent = allChecked ? 'Select All' : 'Deselect All';
+            });
+        </script>
         <% } else { %>
         <h6 style="color: rgb(84, 84, 82);">No items found.</h6>
         <% } %>

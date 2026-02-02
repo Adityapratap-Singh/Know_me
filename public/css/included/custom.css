@@ -1,8 +1,18 @@
 body {
-  background: radial-gradient(1200px 600px at 10% 10%, rgba(255, 211, 105, 0.06), transparent 60%),
-              radial-gradient(900px 500px at 90% 20%, rgba(88, 101, 242, 0.08), transparent 60%),
-              radial-gradient(900px 500px at 20% 90%, rgba(255, 86, 86, 0.06), transparent 60%),
-              var(--smoky-black);
+  background: radial-gradient(1200px 600px at 10% 10%, rgba(0, 255, 242, 0.06), transparent 60%),
+              radial-gradient(900px 500px at 90% 20%, rgba(189, 0, 255, 0.08), transparent 60%),
+              radial-gradient(900px 500px at 20% 90%, rgba(0, 255, 242, 0.06), transparent 60%),
+              var(--primary-color-dark);
+}
+
+#three-canvas-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0; /* Behind main content (z-index: 1), on top of body background */
+  pointer-events: none; /* Allow clicks to pass through */
 }
 
 main::before {
@@ -14,25 +24,314 @@ main::before {
   z-index: 0;
 }
 
-main { position: relative; z-index: 1; }
+main {
+  /* Ensure main content is visible above canvas */
+  position: relative; 
+  z-index: 1; 
+}
+
+/* Glassmorphism Effect for Sidebar and Articles */
+.sidebar,
+article {
+  background: hsla(240, 9%, 15%, 0.6) !important; /* Using --primary-color-medium with transparency */
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid hsla(177, 100%, 50%, 0.3) !important; /* Using --accent-color with transparency */
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Enhancing depth on hover */
+.sidebar:hover,
+article:hover {
+  background: hsla(240, 9%, 20%, 0.7) !important; /* Using --primary-color-light with transparency */
+  border-color: hsla(177, 100%, 40%, 0.5) !important; /* Using --accent-color-dark with transparency */
+  box-shadow: 0 0 20px hsla(177, 100%, 40%, 0.2) !important; /* Using --accent-color-dark for shadow */
+}
+
+/* Make sure modal/sidebar active states respect transparency */
+.sidebar.active {
+    max-height: 405px; /* Keep existing logic but ensure style holds */
+}
+
+/* -----------------------------------
+   #3D FOREGROUND INTERACTIVITY
+----------------------------------- */
+
+/* 1. Enable 3D Space */
+.sidebar,
+.service-item,
+.project-item,
+.testimonial-card,
+.client-logo-container {
+  transform-style: preserve-3d; /* CRITICAL: Allows children to pop out */
+  transform: perspective(1000px);
+}
+
+/* 2. Pop-out Elements (Z-Depth) */
+/* Sidebar Avatar */
+.sidebar-info .avatar-box {
+  transform: translateZ(30px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+/* Sidebar Name/Title */
+.sidebar-info .info-content {
+  transform: translateZ(20px);
+}
+
+/* Service Items (What I Do) */
+.service-item .service-icon-box {
+  transform: translateZ(40px); /* Icon floats high */
+}
+.service-item .service-content-box {
+  transform: translateZ(20px); /* Text floats slightly */
+}
+
+/* Project Items */
+.project-img {
+  transform: translateZ(20px);
+}
+.project-item-icon-box {
+  transform: translateZ(50px) translate(-50%, -50%) scale(var(--scale)) !important; /* Keep centering logic + Z depth */
+}
+
+/* Testimonials */
+.testimonials-avatar-box {
+  transform: translateZ(30px);
+}
+.testimonial-card p {
+  transform: translateZ(10px);
+}
+
+/* Clients */
+.client-logo-container img {
+  transform: translateZ(20px);
+}
+
+/* 3. Interactive Hover States */
+
+/* Navbar Icons: Pop and Glow */
+.navbar-link {
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s ease, text-shadow 0.3s ease;
+  transform-style: preserve-3d;
+}
+
+.navbar-link:hover {
+  transform: translateY(-8px) scale(1.15) rotateX(10deg);
+  color: var(--accent-color);
+}
+
+.navbar-link:hover ion-icon {
+  filter: drop-shadow(0 0 12px var(--accent-color));
+  transform: translateZ(20px); /* Lifts icon off the text */
+}
+
+.navbar-link:hover .navbar-item-text {
+  text-shadow: 0 0 10px var(--accent-color);
+}
+
+/* --- PAGE ENTRANCE ANIMATIONS (3D Rotate & Fade) --- */
+@keyframes neonEntrance {
+  0% {
+    opacity: 0;
+    transform: perspective(1000px) rotateY(-15deg) translateZ(-50px);
+    filter: blur(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(1000px) rotateY(0) translateZ(0);
+    filter: blur(0);
+  }
+}
+
+article.active {
+  animation: neonEntrance 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  will-change: transform, opacity, filter;
+}
+
+/* --- GLOWING BORDERS & FLUIDITY --- */
+/* Add a subtle pulsing glow to the main container */
+.main-content {
+  box-shadow: 0 0 30px hsla(var(--accent-color-hsl), 0.05); /* Using --accent-color */
+  transition: box-shadow 0.5s ease;
+}
+
+.main-content:hover {
+  box-shadow: 0 0 50px hsla(var(--accent-color-hsl), 0.1); /* Using --accent-color */
+}
+
+/* Sidebar Avatar Float */
+.sidebar-info .avatar-box img {
+  animation: floatAvatar 6s ease-in-out infinite;
+  filter: drop-shadow(0 0 15px hsla(var(--accent-color-hsl), 0.3)); /* Using --accent-color */
+}
+
+@keyframes floatAvatar {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* --- ADMIN UI ENHANCEMENTS (Fixes & Neon Theme) --- */
+
+/* 1. Layout Fix: Prevent Navbar Overlap on Desktop */
+@media (min-width: 1000px) {
+  article.active {
+    padding-top: 80px !important; /* Clears the absolute navbar */
+  }
+}
+
+/* 2. Neon Checkbox */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  background: hsla(240, 9%, 10%, 0.8); /* Using --primary-color-dark with transparency */
+  border: 2px solid var(--accent-color);
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  display: grid;
+  place-items: center;
+}
+
+input[type="checkbox"]:checked {
+  background: var(--accent-color);
+  box-shadow: 0 0 15px var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+input[type="checkbox"]:checked::after {
+  content: '';
+  width: 6px;
+  height: 12px;
+  border: solid var(--primary-color-dark); /* Using --primary-color-dark */
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) translate(-1px, -1px);
+}
+
+/* 3. Neon Buttons (Generic Override) */
+.neon-btn {
+  background: transparent !important;
+  border: 1px solid var(--accent-color) !important;
+  color: var(--accent-color) !important;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: var(--fw-500);
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 0 5px hsla(var(--accent-color-hsl), 0.1); /* Using --accent-color */
+}
+
+.neon-btn:hover {
+  background: var(--accent-color) !important;
+  color: var(--primary-color-dark) !important; /* Using --primary-color-dark */
+  box-shadow: 0 0 20px var(--accent-color);
+  transform: translateY(-2px);
+}
+
+.neon-btn ion-icon {
+  font-size: var(--fs-4); /* Using new font size variable */
+  --ionicon-stroke-width: 40px;
+}
+
+/* Variant: Danger (Delete) */
+.neon-btn.danger {
+  border-color: #ff0055 !important;
+  color: #ff0055 !important;
+  box-shadow: 0 0 5px rgba(255, 0, 85, 0.1);
+}
+
+.neon-btn.danger:hover {
+  background: #ff0055 !important;
+  color: white !important;
+  box-shadow: 0 0 20px #ff0055;
+}
+
+/* Variant: Secondary (Select All) */
+.neon-btn.secondary {
+  border-color: var(--text-color-medium) !important;
+  color: var(--text-color-medium) !important;
+}
+
+.neon-btn.secondary:hover {
+  background: var(--text-color-medium) !important;
+  color: var(--primary-color-dark) !important;
+  box-shadow: 0 0 20px var(--text-color-medium);
+}
+
+/* 4. Card Action Area Polish */
+.card-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.card-actions .neon-btn {
+  flex: 1;
+}
+
+/* 5. Input Fields Neon Polish */
+.form-input {
+  background: hsla(240, 9%, 10%, 0.03) !important; /* Using primary-color-dark */
+  border: 1px solid hsla(0, 0%, 95%, 0.1) !important; /* Using text-color-light */
+  color: var(--text-color-light) !important;
+  transition: all 0.3s ease;
+}
+
+.form-input:focus {
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 15px hsla(var(--accent-color-hsl), 0.2) !important; /* Using accent-color */
+  background: hsla(var(--accent-color-hsl), 0.05) !important; /* Using accent-color */
+}
+
+
+/* General Buttons: 3D Lift */
+button, .form-btn {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+button:active, .form-btn:active {
+  transform: translateY(2px);
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Skill Items: Hover Glow */
+.skills-item:hover .title-wrapper {
+  transform: translateX(5px);
+  transition: transform 0.3s ease;
+}
+
+/* Social Links in Sidebar */
+.social-item .social-link {
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s;
+}
+.social-item .social-link:hover {
+  transform: translateY(-3px) scale(1.1);
+  color: var(--accent-color);
+}
 
 /* Styles for form validation feedback */
 .is-invalid {
-  border: 1px solid var(--bittersweet-shimmer) !important; /* Highlight invalid input */
-  box-shadow: 0 0 0 0.2rem hsla(0, 43%, 51%, 0.25); /* Optional: add a subtle glow */
+  border: 1px solid var(--error-color) !important; /* Highlight invalid input */
+  box-shadow: 0 0 0 0.2rem hsla(var(--error-color-hsl), 0.25); /* Optional: add a subtle glow */
 }
 
 .error-message {
-  color: var(--bittersweet-shimmer); /* Red text for error messages */
-  font-size: var(--fs-8); /* Smaller font size */
+  color: var(--error-color); /* Red text for error messages */
+  font-size: var(--fs-7); /* Smaller font size */
   margin-top: 5px;
   display: block; /* Ensure it takes its own line */
 }
 
 /* Styles for valid form input */
 .is-valid {
-  border: 1px solid hsl(120, 39%, 54%) !important; /* Green border for valid input */
-  box-shadow: 0 0 0 0.2rem hsla(120, 39%, 54%, 0.25); /* Subtle green glow */
+  border: 1px solid var(--valid-color) !important; /* Green border for valid input */
+  box-shadow: 0 0 0 0.2rem hsla(var(--valid-color-hsl), 0.25); /* Subtle green glow */
 }
 
 /* Styles for form feedback messages */
@@ -46,15 +345,15 @@ main { position: relative; z-index: 1; }
 }
 
 .success-message {
-  background-color: hsla(120, 39%, 54%, 0.1);
-  color: hsl(120, 39%, 54%);
-  border: 1px solid hsl(120, 39%, 54%);
+  background-color: hsla(var(--valid-color-hsl), 0.1);
+  color: var(--valid-color);
+  border: 1px solid var(--valid-color);
 }
 
 .error-message {
-  background-color: hsla(0, 43%, 51%, 0.1);
-  color: var(--bittersweet-shimmer);
-  border: 1px solid var(--bittersweet-shimmer);
+  background-color: hsla(var(--error-color-hsl), 0.1);
+  color: var(--error-color);
+  border: 1px solid var(--error-color);
 }
 
 

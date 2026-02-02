@@ -2,3 +2,5 @@
 .env
 node_modules/
 TODO.md
+.env.example
+.gitignore

@@ -26,34 +26,42 @@
 /* Scrollbar Styling */
 .testimonials-list::-webkit-scrollbar { display: none; }
 .testimonials-list.has-scrollbar::-webkit-scrollbar { height: 8px; }
-.testimonials-list.has-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.06); border-radius: 8px; }
-.testimonials-list.has-scrollbar::-webkit-scrollbar-thumb { background: #FFD369; border-radius: 8px; }
+.testimonials-list.has-scrollbar::-webkit-scrollbar-track { background: hsla(var(--text-color-light-hsl), 0.06); border-radius: 8px; }
+.testimonials-list.has-scrollbar::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 8px; }
 
 .testimonials-item {
   flex: 0 0 280px;
   max-width: 280px;
   scroll-snap-align: start;
+  animation: fadeInUp 0.5s ease backwards;
 }
+
+.testimonials-item:nth-child(1) { animation-delay: 0.1s; }
+.testimonials-item:nth-child(2) { animation-delay: 0.2s; }
+.testimonials-item:nth-child(3) { animation-delay: 0.3s; }
+.testimonials-item:nth-child(4) { animation-delay: 0.4s; }
+.testimonials-item:nth-child(5) { animation-delay: 0.5s; }
 
 /* --- The Main Card Style --- */
 .testimonial-card {
   position: relative;
   /* Slightly darker top (#242424) to match the avatar box better */
-  background: linear-gradient(180deg, #242424 0%, #1c1c1c 100%);
-  border: 1px solid #383838;
+  background: var(--bg-gradient-primary);
+  border: 1px solid var(--primary-color-medium);
   border-radius: 14px;
   /* Top padding prevents text from hitting the avatar area */
   padding: 30px 20px 25px 20px;
-  box-shadow: 0 16px 30px rgba(0,0,0,0.2); 
+  box-shadow: var(--shadow-1); 
   overflow: visible !important; /* CRITICAL: Allows avatar to hang outside */
   margin-top: 15px;
-  transition: transform .25s ease;
+  transition: transform .25s ease, border-color 0.25s ease;
   cursor: pointer;
 }
 
 .testimonial-card:hover {
   transform: translateY(-2px);
-  border-color: #555;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 15px hsla(var(--accent-color-hsl), 0.1);
 }
 
 /* --- The Floating Avatar Box --- */
@@ -65,9 +73,9 @@
   height: 80px;
   border-radius: 20px;
   /* The Dark Stealth Gradient */
-  background: linear-gradient(135deg, #2A2A2A 0%, #161616 100%);
-  border: 1px solid rgba(255,255,255,0.05);
-  box-shadow: 6px 6px 15px rgba(0,0,0,0.6);
+  background: var(--border-gradient-onyx);
+  border: 1px solid var(--jet);
+  box-shadow: var(--shadow-1);
   z-index: 10;
   display: flex;
   justify-content: center;
@@ -152,7 +160,7 @@
   z-index: 20; 
   border: 1px solid #444;
 }
-.testimonial-nav:hover { background: #FFD369; color: #000; }
+.testimonial-nav:hover { background: var(--accent-color); color: var(--eerie-black-1); }
 .testimonial-nav.prev { left: -10px; display: none; } 
 .testimonial-nav.next { right: -10px; display: none; }
 
@@ -161,13 +169,13 @@
 .modal-container.active { pointer-events: all; visibility: visible; }
 .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(2px); }
 .overlay.active { opacity: 1; visibility: visible; }
-.testimonials-modal { background: #1c1c1c; padding: 25px; border: 1px solid #333; border-radius: 14px; width: 90%; max-width: 600px; transform: scale(0.9); opacity: 0; transition: 0.3s; z-index: 10000; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+.testimonials-modal { background: var(--eerie-black-2); padding: 25px; border: 1px solid var(--jet); border-radius: 14px; width: 90%; max-width: 600px; transform: scale(0.9); opacity: 0; transition: 0.3s; z-index: 10000; box-shadow: var(--shadow-5); }
 .modal-container.active .testimonials-modal { transform: scale(1); opacity: 1; }
-.modal-close-btn { position: absolute; top: 15px; right: 15px; background: #2a2a2a; color: #fff; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; }
+.modal-close-btn { position: absolute; top: 15px; right: 15px; background: var(--jet); color: var(--white-2); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; }
 .modal-avatar-box { width: 60px; height: 60px; border-radius: 14px; overflow: hidden; margin-bottom: 15px; }
 .modal-avatar-box img { width: 100%; height: 100%; object-fit: cover; }
-.modal-title { color: #fff; margin-bottom: 10px; font-size: 1.2rem; }
-.modal-content p { color: #ccc; line-height: 1.6; }
+.modal-title { color: var(--white-2); margin-bottom: 10px; font-size: 1.2rem; }
+.modal-content p { color: var(--light-gray); line-height: 1.6; }
 
 /* Expanded centered testimonial (overlay + card) */
 /* Expanded centered testimonial (overlay + card) */
@@ -193,10 +201,10 @@
   overflow: auto;
   z-index: 9999;
   background: var(--eerie-black-2, #1c1c1c);
-  border: 1px solid var(--jet, #333);
+  border: 1px solid var(--primary-color-medium, #333);
   border-radius: 14px;
   padding: 22px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  box-shadow: var(--shadow-3);
   opacity: 0;
   transition: transform .22s ease, opacity .22s ease;
 }
@@ -210,8 +218,8 @@
   position: absolute;
   top: 12px;
   right: 12px;
-  background: var(--onyx, #2a2a2a);
-  color: var(--white-2, #fff);
+  background: var(--accent-color);
+  color: var(--eerie-black-1);
   border-radius: 8px;
   width: 36px;
   height: 36px;

@@ -33,7 +33,7 @@
         <li class="service-item">
           <div class="service-icon-box">
             <%# Display the icon for the service, if available. %>
-            <img src="<%= (what.icon && what.icon.url) ? what.icon.url : '' %>" alt="<%= what.title %>" width="40">
+            <img src="<%= (what.icon && what.icon.url) ? what.icon.url : '' %>" alt="<%= what.title %>" width="40" loading="lazy">
           </div>
           <div class="service-content-box">
             <h4 class="h4 service-item-title"><%= what.title %></h4>
@@ -75,7 +75,7 @@
             <div class="content-card testimonial-card" data-testimonials-item>
               <figure class="testimonials-avatar-box">
                 <%# Display the testimonial author's avatar, or a default image if none is provided. %>
-                <img src="<%= (testi.image && testi.image.url) ? testi.image.url : '/assets/images/avatar/avatar-1.png' %>" alt="<%= testi.name %>" width="60" data-testimonials-avatar>
+                <img src="<%= (testi.image && testi.image.url) ? testi.image.url : '/assets/images/avatar/avatar-1.png' %>" alt="<%= testi.name %>" width="60" data-testimonials-avatar loading="lazy">
               </figure>
               <h4 class="h4 testimonials-item-title" data-testimonials-title><%= testi.name %></h4>
               <div class="testimonials-text" data-testimonials-text>

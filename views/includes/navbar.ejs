@@ -2,26 +2,31 @@
     <ul class="navbar-list">
         <li class="navbar-item">
             <a href="/profile" class="navbar-link <%= (typeof currentPage !== 'undefined' && currentPage === 'profile') ? 'active' : '' %>">
+                <ion-icon name="person-outline"></ion-icon>
                 <span class="navbar-item-text">About</span>
             </a>
         </li>
         <li class="navbar-item">
             <a href="/resume" class="navbar-link <%= (typeof currentPage !== 'undefined' && currentPage === 'resume') ? 'active' : '' %>">
+                <ion-icon name="document-text-outline"></ion-icon>
                 <span class="navbar-item-text">Resume</span>
             </a>
         </li>
         <li class="navbar-item">
             <a href="/portfolio" class="navbar-link <%= (typeof currentPage !== 'undefined' && currentPage === 'portfolio') ? 'active' : '' %>">
+                <ion-icon name="images-outline"></ion-icon>
                 <span class="navbar-item-text">Portfolio</span>
             </a>
         </li>
         <li class="navbar-item">
             <a href="/blog" class="navbar-link <%= (typeof currentPage !== 'undefined' && currentPage === 'blog') ? 'active' : '' %>">
+                <ion-icon name="book-outline"></ion-icon>
                 <span class="navbar-item-text">Blog</span>
             </a>
         </li>
         <li class="navbar-item">
             <a href="/contact" class="navbar-link <%= (typeof currentPage !== 'undefined' && currentPage === 'contact') ? 'active' : '' %>">
+                <ion-icon name="chatbubbles-outline"></ion-icon>
                 <span class="navbar-item-text">Contact</span>
             </a>
         </li>

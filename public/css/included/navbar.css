@@ -7,12 +7,50 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  background: hsla(240, 1%, 17%, 0.75);
+  background: hsla(var(--primary-color-dark-hsl), 0.75);
   backdrop-filter: blur(10px);
-  border: 1px solid var(--jet);
+  border: 1px solid var(--primary-color-medium);
   border-radius: 12px 12px 0 0;
-  box-shadow: var(--shadow-2);
+  box-shadow: var(--shadow-1);
   z-index: 5;
+}
+
+/* DESKTOP STYLE (Min-width: 580px) */
+@media (min-width: 580px) {
+  .navbar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: auto;
+    left: auto;
+    width: auto;
+    background: hsla(var(--primary-color-dark-hsl), 0.75);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--primary-color-medium);
+    border-radius: 0 20px 0 20px;
+    box-shadow: none;
+    padding: 0 20px;
+  }
+  
+  .navbar-list {
+    gap: 30px;
+    padding: 0;
+  }
+
+  .navbar-link {
+    color: var(--text-color-medium);
+    font-size: var(--fs-7);
+    font-weight: var(--fw-500);
+    padding: 20px 0;
+    transition: color var(--transition-1);
+  }
+
+  .navbar-link:hover,
+  .navbar-link:focus { color: var(--text-color-light); }
+
+  .navbar-link.active { color: var(--accent-color); }
+  
+  .navbar-link.active::after { display: none; } /* Remove underline on desktop */
 }
 
 .navbar-list {
@@ -37,7 +75,7 @@
 .navbar-link:hover,
 .navbar-link:focus { color: var(--light-gray-70); }
 
-.navbar-link.active { color: var(--orange-yellow-crayola); }
+.navbar-link.active { color: var(--neon-cyan); }
 .navbar-link.active::after {
   content: "";
   position: absolute;
@@ -47,7 +85,7 @@
   width: 24px;
   height: 3px;
   border-radius: 3px;
-  background: var(--text-gradient-yellow);
+  background: var(--text-gradient-accent);
 }
 
 .navbar-link ion-icon { font-size: 18px; }
@@ -62,27 +100,31 @@
 
 @media (max-width: 579px) {
   .navbar {
-    flex-direction: column;
-    padding: 0; /* Remove padding to maximize space */
-    width: 100vw;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 12px 12px 0 0;
-    background: hsla(240, 1%, 17%, 0.95); /* Slightly less transparent for readability */
+    position: fixed;
+    bottom: 15px; /* Floating off bottom */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 92%; /* Not full width */
+    background: hsla(var(--primary-color-dark-hsl), 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid hsla(var(--accent-color-hsl), 0.2); /* Subtle Neon Border */
+    border-radius: 24px; /* Pill Shape */
+    box-shadow: var(--shadow-1);
+    padding: 0 10px;
+    z-index: 100;
   }
 
   .navbar-list {
     display: flex;
     justify-content: space-between; /* Push items to edges */
-    align-items: flex-end; /* Align to bottom */
+    align-items: center;
     width: 100%;
     margin: 0;
-    padding: 10px 15px; /* Add breathing room on sides */
+    padding: 10px 5px; 
   }
 
   .navbar-item {
-    width: 20%; /* Each item takes equal width */
+    flex: 1; /* Equal width */
     display: flex;
     justify-content: center;
   }
@@ -91,10 +133,37 @@
     display: flex;
     flex-direction: column; /* STACKS Icon above Text */
     align-items: center;
+    justify-content: center;
     gap: 4px;
-    padding: 5px;
+    padding: 8px;
     width: 100%;
-    color: var(--light-gray) !important; /* Force Light Grey */
+    color: var(--text-color-medium);
+    font-size: 10px; /* Smaller text */
+    border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+  
+  /* Icon styling */
+  .navbar-link ion-icon {
+    font-size: 20px;
+    margin-bottom: 2px;
+    transition: transform 0.3s ease;
+  }
+
+  /* Active State - Floating Pill Style */
+  .navbar-link.active {
+    color: var(--accent-color);
+    background: hsla(var(--accent-color-hsl), 0.1); /* Glow Background */
+    box-shadow: 0 0 15px hsla(var(--accent-color-hsl), 0.1);
+  }
+
+  .navbar-link.active::after {
+    display: none; /* Remove underline */
+  }
+
+  .navbar-link.active ion-icon {
+    transform: translateY(-2px);
+    filter: drop-shadow(0 0 5px var(--accent-color));
   }
 
   /* 1. ICON STYLING */
@@ -102,7 +171,7 @@
     display: block !important;
     font-size: 20px; /* Standard mobile icon size */
     margin-bottom: 0;
-    color: var(--light-gray) !important; 
+    color: var(--text-color-medium) !important; 
     transition: transform 0.2s ease;
   }
 
@@ -112,22 +181,22 @@
     font-size: 10px; /* Small enough to fit, big enough to read */
     font-weight: 400;
     letter-spacing: 0.5px;
-    color: var(--light-gray) !important;
+    color: var(--text-color-medium) !important;
   }
 
   /* 3. ACTIVE STATE (Subtle) */
   .navbar-link.active {
-    background: rgba(255, 255, 255, 0.05); /* Very subtle highlight box */
+    background: hsla(var(--primary-color-light-hsl), 0.05); /* Very subtle highlight box */
     border-radius: 8px;
   }
   
   .navbar-link.active ion-icon {
     transform: translateY(-2px); /* Slight pop up */
-    color: #fff !important; /* Slightly brighter for active, or keep var(--light-gray) */
+    color: var(--text-color-light) !important; /* Slightly brighter for active, or keep var(--light-gray) */
   }
   
   .navbar-link.active .navbar-item-text {
-    color: #fff !important;
+    color: var(--text-color-light) !important;
     font-weight: 600;
   }
 
@@ -143,13 +212,13 @@
     gap: 20px;
     padding-bottom: 8px;
     /* background: rgba(0,0,0,0.2); distinct background area */
-    border-top: 1px solid rgba(255,255,255,0.05);
+    border-top: 1px solid hsla(var(--text-color-light-hsl), 0.05);
   }
 
   .mobile-social-list .social-link {
     font-size: 16px;
     padding: 8px;
-    color: var(--light-gray-70);
+    color: var(--text-color-medium);
   }
 }
 
@@ -199,7 +268,7 @@
     border-radius: 0 20px 0 20px !important;
     padding: 10px 20px !important;
     box-shadow: none !important;
-    background: hsla(240, 2%, 12%, 0.8) !important; /* Slightly clearer bg */
+    background: hsla(var(--primary-color-dark-hsl), 0.8) !important; /* Slightly clearer bg */
   }
 
   /* Add space between the links */

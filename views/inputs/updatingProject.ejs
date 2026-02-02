@@ -4,6 +4,7 @@
     <header>
         <h2 class="h2 article-title">Update Projects</h2>
     </header>
+    <%- include("../includes/admin-nav") %>
 
     <% if (action === 'add') { %>
     <section class="contact-form">
@@ -18,22 +19,22 @@
                 <input type="file" name="image" class="form-input">
             </div>
             <textarea name="description" class="form-input" placeholder="Project summary (optional if using sections)"></textarea>
-            <div class="input-wrapper">
-                <input type="text" name="context" class="form-input" placeholder="Context (problem/opportunity)">
-                <input type="text" name="role" class="form-input" placeholder="Role (scope/responsibilities)">
-            </div>
-            <textarea name="approach" class="form-input" placeholder="Approach (key decisions, trade-offs)"></textarea>
-            <textarea name="outcome" class="form-input" placeholder="Outcome (impact, metrics)"></textarea>
             <input type="text" name="technologies" class="form-input" placeholder="Technologies (comma-separated)" required>
             <input type="text" name="strengths" class="form-input" placeholder="Strengths (comma-separated, e.g., Front-end, Full-stack, UI/UX)">
             <div class="checkbox-wrapper" style="margin-top: .5rem;">
                 <input type="checkbox" id="isVisibleAdd" name="isVisible" checked>
                 <label for="isVisibleAdd">Show this project on the Portfolio</label>
             </div>
-            <button type="submit" class="form-btn" style="margin-top: 1rem;">
-                <ion-icon name="add-outline"></ion-icon>
-                <span>Add Project</span>
-            </button>
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <button type="submit" name="save_action" value="save" class="form-btn" style="flex: 1;">
+                    <ion-icon name="add-outline"></ion-icon>
+                    <span>Save</span>
+                </button>
+                <button type="submit" name="save_action" value="save_and_add_another" class="form-btn" style="flex: 1; background: var(--bg-gradient-onyx); border: 1px solid var(--jet);">
+                    <ion-icon name="duplicate-outline"></ion-icon>
+                    <span>Save & Add Another</span>
+                </button>
+            </div>
         </form>
     </section>
     <% } else if (action === 'edit') { %>
@@ -58,12 +59,6 @@
             </div>
             <% } %>
             <textarea name="description" class="form-input"><%= data.description %></textarea>
-            <div class="input-wrapper">
-                <input type="text" name="context" class="form-input" value="<%= data.context || '' %>" placeholder="Context (problem/opportunity)">
-                <input type="text" name="role" class="form-input" value="<%= data.role || '' %>" placeholder="Role (scope/responsibilities)">
-            </div>
-            <textarea name="approach" class="form-input" placeholder="Approach (key decisions, trade-offs)"><%= data.approach || '' %></textarea>
-            <textarea name="outcome" class="form-input" placeholder="Outcome (impact, metrics)"><%= data.outcome || '' %></textarea>
             <input type="text" name="technologies" class="form-input" value="<%= data.technologies.join(', ') %>" required>
             <input type="text" name="strengths" class="form-input" value="<%= (Array.isArray(data.strengths) ? data.strengths.join(', ') : '') %>" placeholder="Strengths (comma-separated, e.g., Front-end, Full-stack, UI/UX)">
             <div class="checkbox-wrapper" style="margin-top: .5rem; display: inline-flex; align-items: center; gap: .5rem;">
@@ -78,30 +73,62 @@
     </section>
     <% } else if (action === 'delete') { %>
     <section class="service">
-        <h3 class="h3 service-title">Delete Project</h3>
+        <h3 class="h3 service-title">Manage Projects</h3>
         <% if (data && data.length > 0) { %>
-        <ul class="service-list">
-            <% data.forEach(item => { %>
-            <li class="service-item">
-                <div class="service-content-box">
-                    <h4 class="h4 service-item-title"><%= item.title %></h4>
-                    <p class="service-item-text"><%= item.category %></p>
-                    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-                        <a href="/updating/project/edit/<%= item._id %>" class="form-btn" style="flex: 1; text-align: center;">
-                            <ion-icon name="create-outline"></ion-icon>
-                            <span>Edit</span>
-                        </a>
-                        <form action="/updating/project/delete/<%= item._id %>?_method=DELETE" method="POST" style="flex: 1;">
-                            <button type="submit" class="form-btn" style="width: 100%;">
-                                <ion-icon name="trash-outline"></ion-icon>
-                                <span>Delete</span>
-                            </button>
-                        </form>
+        <form action="/updating/project/delete-batch" method="POST" id="batchDeleteForm">
+            <div style="margin-bottom: 1rem; display: flex; gap: 1rem;">
+                <button type="button" class="form-btn" id="selectAllBtn" style="flex: 1; background: var(--bg-gradient-onyx); border: 1px solid var(--jet);">
+                    <ion-icon name="checkbox-outline"></ion-icon>
+                    <span>Select All</span>
+                </button>
+                <button type="submit" class="form-btn" style="flex: 1; background: var(--bittersweet-shimmer);">
+                    <ion-icon name="trash-outline"></ion-icon>
+                    <span>Delete Selected</span>
+                </button>
+            </div>
+            <ul class="service-list">
+                <% data.forEach(item => { %>
+                <li class="service-item" style="display: flex; align-items: flex-start; gap: 15px; padding: 25px;">
+                    <div style="padding-top: 5px;">
+                        <input type="checkbox" name="ids[]" value="<%= item._id %>" style="width: 20px; height: 20px; cursor: pointer;">
                     </div>
-                </div>
-            </li>
-            <% }); %>
-        </ul>
+                    <div class="service-icon-box" style="margin-bottom: 0; min-width: 60px; display: flex; justify-content: center;">
+                        <% if (item.image && item.image.url) { %>
+                            <img src="<%= item.image.url %>" alt="<%= item.title %>" style="width: 60px; height: 60px; object-fit: cover; border-radius: 10px;">
+                        <% } else { %>
+                            <ion-icon name="code-slash-outline" style="font-size: 30px; color: var(--orange-yellow-crayola);"></ion-icon>
+                        <% } %>
+                    </div>
+                    <div style="flex: 1;">
+                        <div class="service-content-box" style="text-align: left;">
+                            <h4 class="h4 service-item-title" style="margin-bottom: 5px;"><%= item.title %></h4>
+                            <p class="service-item-text" style="color: var(--light-gray); margin-bottom: 5px;">
+                                <%= item.category %>
+                            </p>
+                            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                                <a href="/updating/project/edit/<%= item._id %>" class="form-btn" style="flex: 1; text-align: center;">
+                                    <ion-icon name="create-outline"></ion-icon>
+                                    <span>Edit</span>
+                                </a>
+                                <button type="button" onclick="if(confirm('Are you sure?')) { const form = document.createElement('form'); form.method = 'POST'; form.action = '/updating/project/delete/<%= item._id %>?_method=DELETE'; document.body.appendChild(form); form.submit(); }" class="form-btn" style="flex: 1; width: 100%;">
+                                    <ion-icon name="trash-outline"></ion-icon>
+                                    <span>Delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <% }); %>
+            </ul>
+        </form>
+        <script>
+            document.getElementById('selectAllBtn').addEventListener('click', function() {
+                const checkboxes = document.querySelectorAll('input[name="ids[]"]');
+                const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+                checkboxes.forEach(cb => cb.checked = !allChecked);
+                this.querySelector('span').textContent = allChecked ? 'Select All' : 'Deselect All';
+            });
+        </script>
         <% } else { %>
         <p>No projects found.</p>
         <% } %>

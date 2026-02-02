@@ -1,5 +1,15 @@
 const axios = require('axios');
 require('dotenv').config();
+const { getClientIp, getGeolocation } = require('./utils/geolocation');
+const rateLimit = require('express-rate-limit');
+
+module.exports.contactLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 5, // Limit each IP to 5 contact requests per hour
+    message: 'Too many contact requests from this IP, please try again after an hour',
+    standardHeaders: true,
+    legacyHeaders: false,
+});
 
 module.exports.isUpdatingVerified = (req, res, next) => {
     try {
@@ -43,61 +53,17 @@ module.exports.sendVerificationCode = (purpose) => async (req, res, next) => {
             });
         }
 
-        const forwarded = (req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.headers['cf-connecting-ip'] || req.headers['fastly-client-ip'] || req.headers['true-client-ip'] || '').toString();
-        let ip = forwarded.split(',')[0].trim() || req.socket.remoteAddress || req.connection.remoteAddress;
-        if (ip && ip.startsWith('::ffff:')) ip = ip.substring(7);
-        const geoFromIpgeolocation = async (p) => {
-            const key = process.env.ipgeolocation;
-            if (!key) return null;
-            try {
-                const r = await axios.get(`https://api.ipgeolocation.io/ipgeo?apiKey=${key}&ip=${p}`);
-                const d = r.data;
-                const lat = d && (d.latitude ? parseFloat(d.latitude) : (d.location && d.location.latitude ? parseFloat(d.location.latitude) : null));
-                const lon = d && (d.longitude ? parseFloat(d.longitude) : (d.location && d.location.longitude ? parseFloat(d.location.longitude) : null));
-                if (lat !== null && lon !== null) {
-                    return { lat, lon, country: d.country_name || d.country || '', region: d.state_prov || d.state || '', city: d.city || '', isp: d.isp || d.organization || '', provider: 'ipgeolocation.io' };
-                }
-            } catch {}
-            return null;
-        };
-        const geoFromIpApi = async (p) => {
-            try {
-                const r = await axios.get(`http://ip-api.com/json/${p}`);
-                const d = r.data;
-                if (d && d.status === 'success') {
-                    return { lat: d.lat, lon: d.lon, country: d.country, region: d.regionName, city: d.city, isp: d.isp, provider: 'ip-api.com' };
-                }
-            } catch {}
-            return null;
-        };
-        const geoFromIpapiCo = async (p) => {
-            try {
-                const r = await axios.get(`https://ipapi.co/${p}/json/`);
-                const d = r.data;
-                if (d && d.latitude && d.longitude) {
-                    return { lat: d.latitude, lon: d.longitude, country: d.country_name || d.country, region: d.region, city: d.city, isp: d.org || d.asn || '', provider: 'ipapi.co' };
-                }
-            } catch {}
-            return null;
-        };
-        const geoFromIpinfo = async (p) => {
-            try {
-                const r = await axios.get(`https://ipinfo.io/${p}/json`);
-                const d = r.data;
-                if (d && d.loc) {
-                    const parts = d.loc.split(',');
-                    return { lat: parseFloat(parts[0]), lon: parseFloat(parts[1]), country: d.country || '', region: d.region || '', city: d.city || '', isp: d.org || '', provider: 'ipinfo.io' };
-                }
-            } catch {}
-            return null;
-        };
+        const ip = getClientIp(req);
+        
         const buildMessage = async () => {
             if (!ip) return `Verification initiated: ${purpose}\nIP: N/A`;
-            if (ip === '::1' || ip === '127.0.0.1') return `Verification initiated: ${purpose}\nIP: ${ip}`;
-            let geo = await geoFromIpgeolocation(ip);
-            if (!geo) geo = await geoFromIpApi(ip);
-            if (!geo) geo = await geoFromIpapiCo(ip);
-            if (!geo) geo = await geoFromIpinfo(ip);
+            
+            const geo = await getGeolocation(ip);
+            
+            if (geo && geo.isLocal) {
+                 return `Verification initiated: ${purpose}\nIP: ${ip} (Local Address)`;
+            }
+
             if (geo && geo.lat && geo.lon) {
                 const parts = [
                     `Verification initiated: ${purpose}`,
@@ -114,6 +80,7 @@ module.exports.sendVerificationCode = (purpose) => async (req, res, next) => {
             }
             return `Verification initiated: ${purpose}\nIP: ${ip}\nLocation unresolved`;
         };
+
         const botTokenGeo = process.env.TELEGRAM_BOT_TOKEN || process.env.VERIFICATION_TELEGRAM_BOT_TOKEN;
         if (botTokenGeo && chatId) {
             try {
@@ -139,61 +106,17 @@ module.exports.verifyCode = (purpose) => (req, res, next) => {
             purpose === verificationPurpose &&
             Date.now() - verificationTimestamp < 5 * 60 * 1000 // 5 minutes
         ) {
-            const forwarded = (req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.headers['cf-connecting-ip'] || req.headers['fastly-client-ip'] || req.headers['true-client-ip'] || '').toString();
-            let ip = forwarded.split(',')[0].trim() || req.socket.remoteAddress || req.connection.remoteAddress;
-            if (ip && ip.startsWith('::ffff:')) ip = ip.substring(7);
-            const geoFromIpgeolocation = async (p) => {
-                const key = process.env.ipgeolocation;
-                if (!key) return null;
-                try {
-                    const r = await axios.get(`https://api.ipgeolocation.io/ipgeo?apiKey=${key}&ip=${p}`);
-                    const d = r.data;
-                    const lat = d && (d.latitude ? parseFloat(d.latitude) : (d.location && d.location.latitude ? parseFloat(d.location.latitude) : null));
-                    const lon = d && (d.longitude ? parseFloat(d.longitude) : (d.location && d.location.longitude ? parseFloat(d.location.longitude) : null));
-                    if (lat !== null && lon !== null) {
-                        return { lat, lon, country: d.country_name || d.country || '', region: d.state_prov || d.state || '', city: d.city || '', isp: d.isp || d.organization || '', provider: 'ipgeolocation.io' };
-                    }
-                } catch {}
-                return null;
-            };
-            const geoFromIpApi = async (p) => {
-                try {
-                    const r = await axios.get(`http://ip-api.com/json/${p}`);
-                    const d = r.data;
-                    if (d && d.status === 'success') {
-                        return { lat: d.lat, lon: d.lon, country: d.country, region: d.regionName, city: d.city, isp: d.isp, provider: 'ip-api.com' };
-                    }
-                } catch {}
-                return null;
-            };
-            const geoFromIpapiCo = async (p) => {
-                try {
-                    const r = await axios.get(`https://ipapi.co/${p}/json/`);
-                    const d = r.data;
-                    if (d && d.latitude && d.longitude) {
-                        return { lat: d.latitude, lon: d.longitude, country: d.country_name || d.country, region: d.region, city: d.city, isp: d.org || d.asn || '', provider: 'ipapi.co' };
-                    }
-                } catch {}
-                return null;
-            };
-            const geoFromIpinfo = async (p) => {
-                try {
-                    const r = await axios.get(`https://ipinfo.io/${p}/json`);
-                    const d = r.data;
-                    if (d && d.loc) {
-                        const parts = d.loc.split(',');
-                        return { lat: parseFloat(parts[0]), lon: parseFloat(parts[1]), country: d.country || '', region: d.region || '', city: d.city || '', isp: d.org || '', provider: 'ipinfo.io' };
-                    }
-                } catch {}
-                return null;
-            };
+            const ip = getClientIp(req);
+            
             const buildMessage = async () => {
                 if (!ip) return 'Access event. IP: N/A';
-                if (ip === '::1' || ip === '127.0.0.1') return `Access event from local address. IP: ${ip}`;
-                let geo = await geoFromIpgeolocation(ip);
-                if (!geo) geo = await geoFromIpApi(ip);
-                if (!geo) geo = await geoFromIpapiCo(ip);
-                if (!geo) geo = await geoFromIpinfo(ip);
+                
+                const geo = await getGeolocation(ip);
+
+                if (geo && geo.isLocal) {
+                     return `Access event from local address. IP: ${ip}`;
+                }
+
                 if (geo && geo.lat && geo.lon) {
                     const parts = [
                         `IP: ${ip}`,

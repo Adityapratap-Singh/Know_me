@@ -2,47 +2,55 @@
 
 <article class="contact active" data-page="update">
     <header>
-        <h2 class="h2 article-title">Update Database</h2>
+        <h2 class="h2 article-title">Dashboard</h2>
     </header>
 
-    <section class="contact-form">
-        <form action="/updating/updatings" method="POST" class="form">
-            <div class="input-wrapper">
-                <div class="quest">
-                    <label for="updates" class=""><h4>What do you want to update?</h4></label>
-                    <select id="updates" name="updates" class="form-input btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" area-expand="false" required>
-                        <option value="contact">Contact</option>
-                        <option value="whatDoIDo">What Do I Do</option>
-                        <option value="education">Education</option>
-                        <option value="experience">Experience</option>
-                        <option value="skill">Skills</option>
-                        <option value="project">Projects</option>
-                        <option value="testimonial">Testimonials</option>
-                        <option value="client">Clients</option>
-                    </select>
-                </div>
-            </div>
+    <section class="service">
+        <h3 class="h3 service-title">Manage Content</h3>
+        <ul class="service-list">
+            
+            <% 
+            const sections = [
+                { id: 'contact', title: 'Contacts', icon: 'call-outline' },
+                { id: 'whatDoIDo', title: 'What I Do', icon: 'construct-outline' },
+                { id: 'education', title: 'Education', icon: 'school-outline' },
+                { id: 'experience', title: 'Experience', icon: 'briefcase-outline' },
+                { id: 'skill', title: 'Skills', icon: 'ribbon-outline' },
+                { id: 'project', title: 'Projects', icon: 'code-slash-outline' },
+                { id: 'testimonial', title: 'Testimonials', icon: 'chatbubble-ellipses-outline' },
+                { id: 'client', title: 'Clients', icon: 'business-outline' }
+            ];
+            %>
 
-            <div class="input-wrapper">
-                <button type="submit" name="action" value="add" class="form-btn">
-                    <ion-icon name="add-outline"></ion-icon>
-                    <span>Add</span>
-                </button>
-                <button type="submit" name="action" value="delete" class="form-btn">
-                    <ion-icon name="trash-outline"></ion-icon>
-                    <span>Delete</span>
-                </button>
-                <button type="submit" name="action" value="edit" class="form-btn">
-                    <ion-icon name="create-outline"></ion-icon>
-                    <span>Edit</span>
-                </button>
-            </div>
-        </form>
-        <form action="/updating/logout" method="POST" class="form" style="margin-top: 1rem;">
+            <% sections.forEach(section => { %>
+            <li class="service-item">
+                <div class="service-icon-box">
+                    <ion-icon name="<%= section.icon %>"></ion-icon>
+                </div>
+                <div class="service-content-box">
+                    <h4 class="h4 service-item-title"><%= section.title %></h4>
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <a href="/updating/<%= section.id %>/add" class="form-btn" style="padding: 8px 16px; font-size: 14px; text-decoration: none; color: inherit; display: flex; align-items: center; gap: 5px;">
+                            <ion-icon name="add-outline"></ion-icon> Add
+                        </a>
+                        <a href="/updating/<%= section.id %>/view" class="form-btn" style="padding: 8px 16px; font-size: 14px; text-decoration: none; color: inherit; display: flex; align-items: center; gap: 5px;">
+                            <ion-icon name="list-outline"></ion-icon> Manage
+                        </a>
+                    </div>
+                </div>
+            </li>
+            <% }); %>
+
+        </ul>
+    </section>
+
+    <section class="contact-form" style="margin-top: 2rem;">
+        <form action="/updating/logout" method="POST" class="form">
             <button type="submit" class="form-btn">
                 <ion-icon name="log-out-outline"></ion-icon>
                 <span>Logout</span>
             </button>
         </form>
     </section>
+
 </article>

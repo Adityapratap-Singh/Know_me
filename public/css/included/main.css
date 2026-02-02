@@ -8,12 +8,17 @@
 main {
   margin: 15px 12px;
   margin-bottom: 75px;
+  background-color: var(--primary-color-dark);
 }
 
 /* Adjust main content for sticky sidebar on larger screens */
 @media (min-width: 768px) {
   .main-content {
+    position: relative; /* Ensure absolute children (navbar) position relative to this */
     margin-left: 300px; /* Same width as the fixed sidebar */
+    width: calc(100% - 300px - 30px); /* Fill remaining width minus margins */
+    min-height: 100vh;
+    box-shadow: var(--shadow-1); /* Apply a subtle shadow */
   }
 }
 

@@ -95,7 +95,7 @@
 }
 
 .contact-buttons .form-btn:hover {
-  background-color: var(--orange-yellow-crayola); /* Hover effect */
+  background-color: var(--neon-cyan); /* Hover effect */
 }
 
 .contact-buttons .form-btn[type="submit"] {

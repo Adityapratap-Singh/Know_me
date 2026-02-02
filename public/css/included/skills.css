@@ -13,46 +13,66 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
-  color: wheat;
+  color: var(--text-color-light);
   margin-bottom: 0.5rem;
 }
 
 .title-wrapper h5{
-  font-size: 1.2rem;
-  color: white;
+  font-size: var(--fs-4);
+  color: var(--text-color-light);
   margin: 0 0 0.3rem 0;
 }
 
 .skill .title-wrapper data {
-  color: var(--light-gray);
-  font-size: var(--fs-7);
+  color: var(--text-color-medium);
+  font-size: var(--fs-6);
   font-weight: var(--fw-300);
 }
 
 .skill-progress-bg {
-  background: var(--jet);
+  background: var(--primary-color-medium);
   width: 100%;
   height: 8px;
   border-radius: 10px;
+  overflow: hidden; /* Ensure fill doesn't overflow */
+}
+
+@keyframes fillBar {
+  from { width: 0; }
+  to { width: 100%; }
 }
 
 .skill-progress-fill {
-  background: var(--text-gradient-yellow);
+  background: var(--text-gradient-accent);
   height: 100%;
   border-radius: inherit;
+  width: 0;
+  animation: fillBar 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  box-shadow: 0 0 10px hsla(var(--accent-color-hsl), 0.5);
 }
 
 .tools {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
-  margin-bottom: 10px;
+  gap: 8px; /* Increased gap */
+  margin-bottom: 12px;
 }
 
 .tools span {
-  background-color: var(--jet);
-  color: var(--light-gray);
-  padding: 2px 8px;
-  border-radius: 5px;
-  font-size: var(--fs-8);
+  background-color: var(--primary-color-medium);
+  color: var(--text-color-light);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: var(--fs-7);
+  border: 1px solid var(--primary-color-medium);
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.tools span:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  background: hsla(var(--accent-color-hsl), 0.1);
+  box-shadow: 0 0 8px hsla(var(--accent-color-hsl), 0.2);
+  transform: translateY(-2px);
 }

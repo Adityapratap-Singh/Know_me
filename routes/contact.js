@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { isContactViewingVerified, sendVerificationCode, verifyCode } = require('../middleware');
+const { isContactViewingVerified, isUpdatingVerified, sendVerificationCode, verifyCode, contactLimiter } = require('../middleware');
 const contactController = require('../controllers/contact');
 
 // Destructure uploadWithErrorHandler from the controller
@@ -8,7 +8,7 @@ const { uploadWithErrorHandler } = contactController;
 
 // CONTACT
 router.get('/contact', contactController.renderContactForm);
-router.post('/contact', uploadWithErrorHandler, contactController.submitContactForm);
+router.post('/contact', contactLimiter, uploadWithErrorHandler, contactController.submitContactForm);
 
 router.get('/verify-contacts', sendVerificationCode('viewing contacts'));
 router.post('/verify-contacts/check', verifyCode('viewing contacts'));
@@ -25,5 +25,11 @@ router.get('/contacts/:id/edit', isContactViewingVerified, contactController.ren
 
 // Route to handle the update of a single contact
 router.put('/contacts/:id', isContactViewingVerified, uploadWithErrorHandler, contactController.updateContact);
+
+// --- Admin "Updating" Routes (Consistent with other resources) ---
+router.get('/updating/contact/add', isUpdatingVerified, contactController.renderAddContact);
+router.post('/updating/contact/add', isUpdatingVerified, contactController.addContact);
+router.post('/updating/contact/delete-batch', isUpdatingVerified, contactController.deleteBatchContact);
+router.get('/updating/contact/view', isUpdatingVerified, contactController.renderDeleteContact);
 
 module.exports = router;

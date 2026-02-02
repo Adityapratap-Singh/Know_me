@@ -4,6 +4,7 @@
     <header>
         <h2 class="h2 article-title">Update Experience</h2>
     </header>
+    <%- include("../includes/admin-nav") %>
 
     <% if (action === 'add') { %>
     <section class="contact-form">
@@ -21,10 +22,16 @@
                 <input type="text" onfocus="(this.type='date')" onblur="(this.type='text')" name="endDate" class="form-input" placeholder="End Date">
             </div>
             <textarea name="responsibilities" class="form-input" placeholder="Responsibilities (one per line)" required></textarea>
-            <button type="submit" class="form-btn">
-                <ion-icon name="add-outline"></ion-icon>
-                <span>Add Experience</span>
-            </button>
+            <div class="card-actions">
+                <button type="submit" name="save_action" value="save" class="neon-btn" style="flex: 1;">
+                    <ion-icon name="add-outline"></ion-icon>
+                    <span>Save</span>
+                </button>
+                <button type="submit" name="save_action" value="save_and_add_another" class="neon-btn secondary" style="flex: 1;">
+                    <ion-icon name="duplicate-outline"></ion-icon>
+                    <span>Save & Add Another</span>
+                </button>
+            </div>
         </form>
     </section>
     <% } else if (action === 'edit') { %>
@@ -51,31 +58,61 @@
     </section>
     <% } else if (action === 'delete') { %>
     <section class="service">
-        <h3 class="h3 service-title">Delete Experience</h3>
+        <h3 class="h3 service-title">Manage Experience</h3>
         <% if (data && data.length > 0) { %>
-        <ul class="service-list">
-            <% data.forEach(item => { %>
-            <li class="service-item">
-                <div class="service-content-box">
-                    <h4 class="h4 service-item-title"><%= item.position %></h4>
-                    <p class="service-item-text"><%= item.company %></p>
-                    <p class="service-item-text"><%= item.startDate %> to <%= item.endDate %></p>
-                    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-                        <a href="/updating/experience/edit/<%= item._id %>" class="form-btn" style="flex: 1; text-align: center;">
-                            <ion-icon name="create-outline"></ion-icon>
-                            <span>Edit</span>
-                        </a>
-                        <form action="/updating/experience/delete/<%= item._id %>?_method=DELETE" method="POST" style="flex: 1;">
-                            <button type="submit" class="form-btn" style="width: 100%;">
-                                <ion-icon name="trash-outline"></ion-icon>
-                                <span>Delete</span>
-                            </button>
-                        </form>
+        <form action="/updating/experience/delete-batch" method="POST" id="batchDeleteForm">
+            <div class="card-actions" style="margin-bottom: 20px;">
+                <button type="button" class="neon-btn secondary" id="selectAllBtn">
+                    <ion-icon name="checkbox-outline"></ion-icon>
+                    <span>Select All</span>
+                </button>
+                <button type="submit" class="neon-btn danger">
+                    <ion-icon name="trash-outline"></ion-icon>
+                    <span>Delete Selected</span>
+                </button>
+            </div>
+            <ul class="service-list">
+                <% data.forEach(item => { %>
+                <li class="service-item" style="display: flex; align-items: flex-start; gap: 15px; padding: 25px;">
+                    <div style="padding-top: 5px;">
+                        <input type="checkbox" name="ids[]" value="<%= item._id %>">
                     </div>
-                </div>
-            </li>
-            <% }); %>
-        </ul>
+                    <div class="service-icon-box" style="margin-bottom: 0; min-width: 40px; display: flex; justify-content: center;">
+                        <ion-icon name="briefcase-outline" style="font-size: 30px; color: var(--orange-yellow-crayola);"></ion-icon>
+                    </div>
+                    <div style="flex: 1;">
+                        <div class="service-content-box" style="text-align: left;">
+                            <h4 class="h4 service-item-title" style="margin-bottom: 5px;"><%= item.position %></h4>
+                            <p class="service-item-text" style="color: var(--light-gray); margin-bottom: 5px;">
+                                <%= item.company %>
+                            </p>
+                            <p class="service-item-text" style="font-size: var(--fs-8); color: var(--light-gray-70);">
+                                <%= new Date(item.startDate).getFullYear() %> — <%= item.endDate ? new Date(item.endDate).getFullYear() : 'Present' %>
+                            </p>
+                            <div class="card-actions">
+                                <a href="/updating/experience/edit/<%= item._id %>" class="neon-btn">
+                                    <ion-icon name="create-outline"></ion-icon>
+                                    <span>Edit</span>
+                                </a>
+                                <button type="button" onclick="if(confirm('Are you sure?')) { const form = document.createElement('form'); form.method = 'POST'; form.action = '/updating/experience/delete/<%= item._id %>?_method=DELETE'; document.body.appendChild(form); form.submit(); }" class="neon-btn danger">
+                                    <ion-icon name="trash-outline"></ion-icon>
+                                    <span>Delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <% }); %>
+            </ul>
+        </form>
+        <script>
+            document.getElementById('selectAllBtn').addEventListener('click', function() {
+                const checkboxes = document.querySelectorAll('input[name="ids[]"]');
+                const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+                checkboxes.forEach(cb => cb.checked = !allChecked);
+                this.querySelector('span').textContent = allChecked ? 'Select All' : 'Deselect All';
+            });
+        </script>
         <% } else { %>
         <p>No items found.</p>
         <% } %>

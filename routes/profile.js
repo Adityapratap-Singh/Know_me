@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
+console.log("Loading profile controller...");
 const profileController = require('../controllers/profile');
+console.log("Profile controller loaded.");
 
 // HOME
 router.get('/', profileController.homeRedirect);

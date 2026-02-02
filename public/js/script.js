@@ -17,6 +17,8 @@ import './used/projects.js';
 import './used/contact-form.js';
 // Imports the logic for expanding and viewing contact details.
 import './used/view-contacts.js';
+// Imports the logic for smooth page transitions.
+import './used/page-transition.js';
 
 // If there's any code that needs to run globally or orchestrate interactions
 // between these modules, it would go here. For now, simply importing them
